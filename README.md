@@ -1,15 +1,22 @@
 # Skins Pro
 
-Skins Pro is a simplified Home Assistant Community Dashboard plugin.
+Skins Pro is a simplified Home Assistant Community Dashboard plugin, forked and rebuilt from [dwains-dashboard-next](https://github.com/dwainscheeren/dwains-dashboard-next).
 
-It keeps the convenient "Add dashboard" flow from Community dashboards, but removes the old complex strategy system, blueprint management, editor dialogs, and extra frontend features. The new focus is a single Minecraft-style dashboard experience inspired by the `html-card-pro` showcase, with:
+It keeps the convenient "Add dashboard" flow from Community dashboards, but removes the old complex strategy system, blueprint management, editor dialogs, and extra frontend features. The new focus is a single Minecraft-style dashboard experience with:
 
 - direct add from Home Assistant Community dashboards
 - no runtime dependencies
 - Chinese and English support
 - replaceable resource packs for visuals and style
+- automated GitHub Actions build and release pipeline
+- all assets bundled in `dist/` for one-click HACS installation
 
-## What Changed
+## Credits
+
+- **Original Project**: [dwains-dashboard-next](https://github.com/dwainscheeren/dwains-dashboard-next) — this project is a simplified rewrite that takes inspiration from its architecture and removes the complex legacy subsystems.
+- **Initial Assets & Design**: [html-card-pro Discussions](https://github.com/ha-china/html-card-pro/discussions/11) — the initial Minecraft-style skin assets and visual design concept were sourced from this community showcase.
+
+## What Changed from the Original
 
 - Removed complex dashboard generation logic
 - Removed blueprint, replacement, settings, and editor subsystems
@@ -56,33 +63,50 @@ If your entity IDs match the defaults closely, it works with minimal editing. If
 
 Resource packs let you change the visual style without changing code.
 
-By default, the repository now ships with the bundled skin under:
+By default, the repository ships with bundled skins under:
 
 ```text
-/hacsfiles/<repository>/skins-pro
+/hacsfiles/<repository>/skins-pro/{skin}/
 ```
 
-The default build now auto-detects its own asset directory from the installed script URL, so in most cases you do not need to set `resource_pack.base_path` manually.
+The auto-detection logic resolves assets from `import.meta.url`, so in most cases you do not need to set `resource_pack.base_path` manually. After installation via HACS, the path resolves automatically.
 
 You can still use `resource_pack.base_path` to point to your own asset directory, and optionally override file names in `resource_pack.assets` or CSS tokens in `resource_pack.theme`.
 
-Bundled asset directory:
+Bundled skins:
 
 ```text
-/skins-pro/
-  base-texture.jpg
-  stage-background.jpg
-  avatar-steve.jpg
-  decor-wolf-lantern.jpg
-  icon-light.jpg
-  icon-ac.jpg
-  icon-speaker.jpg
-  icon-lock.jpg
-  icon-garden-light.jpg
-  room-living.jpg
-  room-bedroom.jpg
-  room-kitchen.jpg
-  room-garden.jpg
+skins-pro/
+  default/
+    base-texture.jpg
+    stage-background.jpg
+    avatar-steve.jpg
+    decor-wolf-lantern.jpg
+    icon-light.jpg
+    icon-ac.jpg
+    icon-speaker.jpg
+    icon-lock.jpg
+    icon-garden-light.jpg
+    room-living.jpg
+    room-bedroom.jpg
+    room-kitchen.jpg
+    room-garden.jpg
+    theme.css
+  minecraft/
+    base-texture.jpg
+    stage-background.jpg
+    avatar-steve.jpg
+    decor-wolf-lantern.jpg
+    icon-light.jpg
+    icon-ac.jpg
+    icon-speaker.jpg
+    icon-lock.jpg
+    icon-garden-light.jpg
+    room-living.jpg
+    room-bedroom.jpg
+    room-kitchen.jpg
+    room-garden.jpg
+    theme.css
 ```
 
 Example card config:
@@ -181,6 +205,7 @@ dist/skins-pro.js
 
 ## Notes
 
+- This project is a complete rewrite and fork of [dwains-dashboard-next](https://github.com/dwainscheeren/dwains-dashboard-next). It has its own independent Git history and release cycle.
 - The project no longer depends on `lit`, `memoize-one`, or other runtime packages.
 - The current implementation is intentionally minimal and opinionated.
 - If needed, more visual packs can be added later without bringing back the old complex settings architecture.
