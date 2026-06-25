@@ -996,8 +996,14 @@ export class MinecraftDashboardCard extends HTMLElement {
     return `
       <div class="maintenance-block">
         <div class="section-title maintenance-title"><h2>${escapeHtml(translate('maintenance'))}</h2></div>
-        <div class="maintenance-list">
-          ${items.map((item) => `<div class="maintenance-item"><span class="maintenance-dot ${escapeHtml(item.level)}"></span><span>${escapeHtml(item.text)}</span></div>`).join('')}
+        <div class="env-list maintenance-list">
+          ${items.map((item) => `
+            <div class="env-row maintenance-item">
+              <div class="dot ${escapeHtml(item.level === 'error' ? 'pm' : 'hum')}"><ha-icon icon="${escapeHtml(this.batteryIcon(item.battery))}"></ha-icon></div>
+              <div class="muted">${escapeHtml(item.name)}</div>
+              <div class="env-value">${escapeHtml(String(item.battery))}%</div>
+            </div>
+          `).join('')}
         </div>
       </div>
     `;
@@ -1016,12 +1022,12 @@ export class MinecraftDashboardCard extends HTMLElement {
     `;
   }
 
-  private getMaintenanceItems(language: 'zh-CN' | 'en'): Array<{ text: string; level: 'warning' | 'error' }> {
+  private getMaintenanceItems(_language: 'zh-CN' | 'en'): Array<{ name: string; battery: number; level: 'warning' | 'error' }> {
     if (!this._hass) {
       return [];
     }
 
-    const items: Array<{ text: string; level: 'warning' | 'error' }> = [];
+    const items: Array<{ name: string; battery: number; level: 'warning' | 'error' }> = [];
 
     Object.values(this._hass.states).forEach((entity) => {
       if (!entity) {
@@ -1031,8 +1037,9 @@ export class MinecraftDashboardCard extends HTMLElement {
       const attrBattery = Number(entity.attributes?.battery_level);
       if (Number.isFinite(attrBattery) && attrBattery > 0 && attrBattery <= 20) {
         items.push({
-          text: `${String(entity.attributes?.friendly_name || entity.entity_id)} ${language === 'zh-CN' ? '电量低' : 'low battery'} (${attrBattery}%)`,
-          level: 'warning',
+          name: String(entity.attributes?.friendly_name || entity.entity_id),
+          battery: Math.round(attrBattery),
+          level: attrBattery <= 10 ? 'error' : 'warning',
         });
       }
 
@@ -1040,8 +1047,9 @@ export class MinecraftDashboardCard extends HTMLElement {
         const stateBattery = Number(entity.state);
         if (Number.isFinite(stateBattery) && stateBattery > 0 && stateBattery <= 20) {
           items.push({
-            text: `${String(entity.attributes?.friendly_name || entity.entity_id)} ${language === 'zh-CN' ? '电量低' : 'low battery'} (${stateBattery}%)`,
-            level: 'warning',
+            name: String(entity.attributes?.friendly_name || entity.entity_id),
+            battery: Math.round(stateBattery),
+            level: stateBattery <= 10 ? 'error' : 'warning',
           });
         }
       }
@@ -1049,10 +1057,11 @@ export class MinecraftDashboardCard extends HTMLElement {
 
     const seen = new Set<string>();
     return items.filter((item) => {
-      if (seen.has(item.text)) {
+      const key = `${item.name}|${item.battery}`;
+      if (seen.has(key)) {
         return false;
       }
-      seen.add(item.text);
+      seen.add(key);
       return true;
     });
   }
@@ -1202,7 +1211,7 @@ export class MinecraftDashboardCard extends HTMLElement {
       const active = ['on', 'playing', 'cool', 'heat', 'armed', 'locked', 'open'].includes(device.state);
       const statusClass = active ? `device-on-${device.color}` : (device.state === 'unavailable' ? 'device-unavailable' : 'device-off');
       const assetKey = this.assetKeyForDomain(device.entityId.split('.')[0] || 'sensor');
-      const image = assetKey ? this.imageTag(assetKey, device.name, 'item-img') : `<div class="item-icon"><ha-icon icon="${escapeHtml(device.icon)}"></ha-icon></div>`;
+      const image = this.imageTag(assetKey, device.name, 'item-img');
       return `
         <button class="device ${statusClass}" data-entity="${escapeHtml(device.entityId)}" data-action="more-info">
           <div class="device-top">
@@ -1216,7 +1225,7 @@ export class MinecraftDashboardCard extends HTMLElement {
     }).join('');
   }
 
-  private assetKeyForDomain(domain: string): string | undefined {
+  private assetKeyForDomain(domain: string): string {
     const map: Record<string, string> = {
       light: 'light',
       climate: 'climate',
@@ -1228,7 +1237,12 @@ export class MinecraftDashboardCard extends HTMLElement {
       cover: 'garden',
     };
 
-    return map[domain];
+    if (map[domain]) {
+      return map[domain] as string;
+    }
+
+    const pool = ['light', 'climate', 'speaker', 'lock', 'garden'];
+    return pool[Math.floor(Math.random() * pool.length)] as string;
   }
 
   private weatherIcon(state: string): string {
@@ -1385,6 +1399,20 @@ export class MinecraftDashboardCard extends HTMLElement {
     return temp !== undefined && temp !== null ? `${this.formatNumber(String(temp), 1)}°C` : '';
   }
 
+  private batteryIcon(battery: number): string {
+    if (battery <= 5) return 'mdi:battery-alert-variant-outline';
+    if (battery <= 10) return 'mdi:battery-10';
+    if (battery <= 20) return 'mdi:battery-20';
+    if (battery <= 30) return 'mdi:battery-30';
+    if (battery <= 40) return 'mdi:battery-40';
+    if (battery <= 50) return 'mdi:battery-50';
+    if (battery <= 60) return 'mdi:battery-60';
+    if (battery <= 70) return 'mdi:battery-70';
+    if (battery <= 80) return 'mdi:battery-80';
+    if (battery <= 90) return 'mdi:battery-90';
+    return 'mdi:battery';
+  }
+
   private areaSummaryById(areaId: string, language: 'zh-CN' | 'en'): string {
     if (!areaId) {
       return language === 'zh-CN' ? 'Home Assistant Area' : 'Home Assistant Area';
@@ -1523,10 +1551,11 @@ export class MinecraftDashboardCard extends HTMLElement {
             const stateLabel = this.deviceStateLabel(device.state, language);
             const active = ['on', 'playing', 'cool', 'heat', 'armed', 'locked', 'open'].includes(device.state);
             const statusClass = active ? `device-on-${device.color}` : (device.state === 'unavailable' ? 'device-unavailable' : 'device-off');
+            const assetKey = this.assetKeyForDomain(device.entityId.split('.')[0] || 'sensor');
             return `
               <button class="device ${statusClass}" data-entity="${escapeHtml(device.entityId)}" data-action="more-info">
                 <div class="device-top">
-                  <div class="item-icon"><ha-icon icon="${escapeHtml(device.icon)}"></ha-icon></div>
+                  ${this.imageTag(assetKey, device.name, 'item-img')}
                   <div class="tag-stack"><div class="status">${escapeHtml(stateLabel)}</div></div>
                 </div>
                 <div class="device-copy"><p class="device-name">${escapeHtml(device.name)}</p><p class="muted">${escapeHtml(device.subtitle)}</p></div>
