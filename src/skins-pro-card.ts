@@ -1665,7 +1665,7 @@ export class MinecraftDashboardCard extends HTMLElement {
       this._areas = Array.isArray(areas)
         ? [...areas].sort((left, right) => left.name.localeCompare(right.name))
         : [];
-      this.render();
+      if (this._view !== 'settings') this.render();
     }).catch(() => {
       this._areas = [];
     }).finally(() => {
@@ -1684,7 +1684,7 @@ export class MinecraftDashboardCard extends HTMLElement {
       type: 'config/entity_registry/list',
     }).then((entities) => {
       this._entityRegistry = Array.isArray(entities) ? entities : [];
-      this.render();
+      if (this._view !== 'settings') this.render();
     }).catch(() => {
       this._entityRegistry = [];
     }).finally(() => {
@@ -1703,7 +1703,7 @@ export class MinecraftDashboardCard extends HTMLElement {
       type: 'config/device_registry/list',
     }).then((devices) => {
       this._deviceRegistry = Array.isArray(devices) ? devices : [];
-      this.render();
+      if (this._view !== 'settings') this.render();
     }).catch(() => {
       this._deviceRegistry = [];
     }).finally(() => {

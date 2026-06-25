@@ -35,7 +35,7 @@ jobs:
         run: npm run type-check
 
       - name: Build
-        run: npx rollup -c
+        run: npm run build
 
       - name: Commit dist assets
         if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
