@@ -729,7 +729,7 @@ export class MinecraftDashboardCard extends HTMLElement {
           <p class="quote">${escapeHtml(quote)}${quoteSource ? `<span class="quote-source"> - ${escapeHtml(quoteSource)}</span>` : ''}</p>
           <div class="weather-row" data-entity="${escapeHtml(this._config?.weather?.entity || '')}" data-action="more-info">
             <div class="weather-state-icon"><ha-icon icon="${weatherIcon}"></ha-icon></div>
-            <div class="weather-text">${escapeHtml(this.weatherDisplayText(this._config?.weather?.entity))} ${escapeHtml(this.formatNumber(this.stateValue(this._config?.weather?.temperature_entity), 1))}${this._config?.weather?.temperature_entity ? '°C' : ''}</div>
+            <div class="weather-text">${escapeHtml(this.weatherDisplayText(this._config?.weather?.entity))} ${this.weatherTemperature(this._config?.weather?.entity)}</div>
           </div>
         </section>
         <section class="bottom-stack">
@@ -1069,10 +1069,6 @@ export class MinecraftDashboardCard extends HTMLElement {
     const weatherOptions = allStates
       .filter((entity) => entity.entity_id.startsWith('weather.'))
       .map((entity) => ({ value: entity.entity_id, label: String(entity.attributes?.friendly_name || entity.entity_id) }));
-    const weatherTemperatureOptions = allStates
-      .filter((entity) => entity.entity_id.startsWith('sensor.'))
-      .filter((entity) => /temperature|temp|outdoor|outside|weather/i.test(entity.entity_id) || /temperature/i.test(String(entity.attributes?.device_class || '')))
-      .map((entity) => ({ value: entity.entity_id, label: String(entity.attributes?.friendly_name || entity.entity_id) }));
     const energyEntityOptions = allStates
       .filter((entity) => entity.entity_id.startsWith('sensor.'))
       .filter((entity) => /energy|power|cost/i.test(entity.entity_id))
@@ -1099,7 +1095,7 @@ export class MinecraftDashboardCard extends HTMLElement {
 
     const skinOptions = BUNDLED_SKINS.map((skin) => ({ value: skin, label: skin }));
 
-    const renderSingleSelect = (path: 'skin' | 'weather_entity' | 'weather_temperature_entity' | 'energy_entity' | 'energy_compare_entity' | 'energy_bars_entity', title: string, selected: string, options: Array<{ value: string; label: string }>) => `
+    const renderSingleSelect = (path: 'skin' | 'weather_entity' | 'energy_entity' | 'energy_compare_entity' | 'energy_bars_entity', title: string, selected: string, options: Array<{ value: string; label: string }>) => `
       <div>
         <span>${escapeHtml(title)}</span>
         <div class="selector-stack">
@@ -1149,7 +1145,6 @@ export class MinecraftDashboardCard extends HTMLElement {
         <div class="settings-grid">
           ${renderSingleSelect('skin', language === 'zh-CN' ? '皮肤' : 'Skin', this.selectedSkin(), skinOptions)}
           ${renderSingleSelect('weather_entity', language === 'zh-CN' ? '天气实体' : 'Weather entity', this._config?.home_selection?.weather_entity || this._config?.weather?.entity || '', weatherOptions)}
-          ${renderSingleSelect('weather_temperature_entity', language === 'zh-CN' ? '天气温度实体' : 'Weather temperature entity', this._config?.home_selection?.weather_temperature_entity || this._config?.weather?.temperature_entity || '', weatherTemperatureOptions)}
           ${renderSingleSelect('energy_entity', language === 'zh-CN' ? '用电实体' : 'Energy entity', this._config?.home_selection?.energy_entity || this._config?.energy?.entity || '', energyEntityOptions)}
           ${renderSingleSelect('energy_compare_entity', language === 'zh-CN' ? '用电对比实体' : 'Energy compare entity', this._config?.home_selection?.energy_compare_entity || this._config?.energy?.compare_value_entity || '', energyEntityOptions)}
           ${renderSingleSelect('energy_bars_entity', language === 'zh-CN' ? '柱状图样本实体' : 'Bars sample entity', this._config?.home_selection?.energy_bars_entity || this._config?.energy?.bars_entity || '', energyEntityOptions)}
@@ -1381,6 +1376,15 @@ export class MinecraftDashboardCard extends HTMLElement {
     return String(entity?.state || '--');
   }
 
+  private weatherTemperature(entityId?: string): string {
+    if (!entityId || !this._hass) {
+      return '';
+    }
+
+    const temp = this._hass.states[entityId]?.attributes?.temperature;
+    return temp !== undefined && temp !== null ? `${this.formatNumber(String(temp), 1)}°C` : '';
+  }
+
   private areaSummaryById(areaId: string, language: 'zh-CN' | 'en'): string {
     if (!areaId) {
       return language === 'zh-CN' ? 'Home Assistant Area' : 'Home Assistant Area';
@@ -1472,9 +1476,9 @@ export class MinecraftDashboardCard extends HTMLElement {
         const state = stateObj?.state || 'unknown';
         const domain = preferredEntity.split('.')[0] || 'sensor';
         const icon = String(stateObj?.attributes?.icon || this.iconForDomain(domain));
-        const name = device.name_by_user || device.name || stateObj?.attributes?.friendly_name || preferredEntity;
-        const subtitle = device.manufacturer || device.model || `${entities.length} entities`;
-        const detail = device.model || domain || '--';
+        const name = String(stateObj?.attributes?.friendly_name || preferredEntity);
+        const subtitle = this.areaNameForEntity(preferredEntity) || '';
+        const detail = domain || '--';
 
         return {
           entityId: preferredEntity,
@@ -1878,7 +1882,7 @@ export class MinecraftDashboardCard extends HTMLElement {
 
     this.shadowRoot.querySelectorAll<HTMLSelectElement>('[data-settings-single]').forEach((select) => {
       select.addEventListener('change', () => {
-        const path = select.dataset.settingsSingle as 'skin' | 'weather_entity' | 'weather_temperature_entity' | 'energy_entity' | 'energy_compare_entity' | 'energy_bars_entity' | undefined;
+        const path = select.dataset.settingsSingle as 'skin' | 'weather_entity' | 'energy_entity' | 'energy_compare_entity' | 'energy_bars_entity' | undefined;
         if (!path || !this._config) {
           return;
         }
@@ -1897,10 +1901,6 @@ export class MinecraftDashboardCard extends HTMLElement {
         if (path === 'weather_entity') {
           next.weather = next.weather || {};
           next.weather.entity = select.value;
-        }
-        if (path === 'weather_temperature_entity') {
-          next.weather = next.weather || {};
-          next.weather.temperature_entity = select.value;
         }
         if (path === 'energy_entity') {
           next.energy = next.energy || {};
