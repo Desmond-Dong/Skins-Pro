@@ -5,7 +5,7 @@
   "main": "dist/skins-pro.js",
   "type": "module",
   "scripts": {
-    "build": "rollup -c && node scripts/build-skins.cjs",
+    "build": "node scripts/build-skins.cjs && rollup -c",
     "watch": "rollup -c -w",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "type-check": "tsc --noEmit",

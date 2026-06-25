@@ -12,4 +12,9 @@ dirs.forEach(dir => {
   fs.cpSync(path.join(src, dir), path.join(dest, dir), { recursive: true, force: true });
 });
 
-fs.writeFileSync(path.join(dest, 'skins.json'), JSON.stringify(dirs) + '\n');
+// Generate skin list for compile-time injection
+fs.writeFileSync(
+  path.join('src', 'skins.generated.ts'),
+  `export const SKINS: readonly string[] = ${JSON.stringify(dirs)};\nexport const DEFAULT_SKIN: string = SKINS[0] || '${dirs[0] || 'default'}';\n`,
+);
+

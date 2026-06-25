@@ -361,23 +361,9 @@ const DEFAULT_CONFIG: DashboardConfig = {
   },
 };
 
-let BUNDLED_SKINS: string[] = ['default'];
-let DEFAULT_SKIN = 'default';
+import { SKINS, DEFAULT_SKIN } from './skins.generated';
 
-const loadSkins = async (): Promise<void> => {
-  try {
-    const url = new URL('skins.json', import.meta.url).toString();
-    const res = await fetch(url);
-    if (!res.ok) return;
-    const list: string[] = await res.json();
-    if (list.length > 0) {
-      BUNDLED_SKINS = list;
-      DEFAULT_SKIN = list[0] || 'default';
-    }
-  } catch {
-    // keep fallback
-  }
-};
+const BUNDLED_SKINS: readonly string[] = SKINS;
 
 const escapeHtml = (value: string): string => value
   .replace(/&/g, '&amp;')
@@ -572,7 +558,6 @@ export class MinecraftDashboardCard extends HTMLElement {
   public constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    loadSkins().then(() => this.render());
   }
 
   public connectedCallback(): void {
