@@ -479,7 +479,7 @@ export const buildAutoConfig = (hass: HomeAssistant): DashboardConfig => {
   const defaultEnv1 = DEFAULT_ENVIRONMENT[1] as EnvironmentMetricConfig;
   const defaultEnv2 = DEFAULT_ENVIRONMENT[2] as EnvironmentMetricConfig;
 
-  const weatherEntity = findEntity(states, ['weather.home', 'weather.forecast_home', 'weather']);
+  const weatherEntity = findEntity(states, ['weather.home', 'weather.forecast_home']);
   const outdoorTemp = findEntity(states, ['sensor.outdoor_temperature', 'sensor.outside_temperature', 'sensor.weather_temperature']);
   const quoteEntity = findEntity(states, ['input_text.daily_quote', 'sensor.daily_quote', 'sensor.hitokoto']);
   const quoteSourceEntity = findEntity(states, ['input_text.daily_quote_source', 'sensor.daily_quote_source', 'sensor.hitokoto_from']);
@@ -603,13 +603,33 @@ export class MinecraftDashboardCard extends HTMLElement {
       }
 
       const saved = JSON.parse(raw) as Partial<DashboardConfig>;
-      return {
+      const merged: DashboardConfig = {
         ...config,
         home_selection: {
           ...(config.home_selection || {}),
           ...(saved.home_selection || {}),
         },
       };
+
+      const hs = merged.home_selection || {};
+      if (hs.weather_entity) {
+        merged.weather = merged.weather || {};
+        merged.weather.entity = hs.weather_entity;
+      }
+      if (hs.energy_entity) {
+        merged.energy = merged.energy || {};
+        merged.energy.entity = hs.energy_entity;
+      }
+      if (hs.energy_compare_entity) {
+        merged.energy = merged.energy || {};
+        merged.energy.compare_value_entity = hs.energy_compare_entity;
+      }
+      if (hs.energy_bars_entity) {
+        merged.energy = merged.energy || {};
+        merged.energy.bars_entity = hs.energy_bars_entity;
+      }
+
+      return merged;
     } catch (_error) {
       return config;
     }
