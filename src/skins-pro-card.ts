@@ -479,7 +479,7 @@ export const buildAutoConfig = (hass: HomeAssistant): DashboardConfig => {
   const defaultEnv1 = DEFAULT_ENVIRONMENT[1] as EnvironmentMetricConfig;
   const defaultEnv2 = DEFAULT_ENVIRONMENT[2] as EnvironmentMetricConfig;
 
-  const weatherEntity = findEntity(states, ['weather.home', 'weather.forecast_home']);
+  const weatherEntity = findEntity(states, ['weather.home', 'weather.forecast_home', 'weather.']);
   const outdoorTemp = findEntity(states, ['sensor.outdoor_temperature', 'sensor.outside_temperature', 'sensor.weather_temperature']);
   const quoteEntity = findEntity(states, ['input_text.daily_quote', 'sensor.daily_quote', 'sensor.hitokoto']);
   const quoteSourceEntity = findEntity(states, ['input_text.daily_quote_source', 'sensor.daily_quote_source', 'sensor.hitokoto_from']);
