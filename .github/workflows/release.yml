@@ -32,10 +32,8 @@ jobs:
 
       - name: Package release
         run: |
-          mkdir -p release/skins-pro
-          cp -r dist/* release/skins-pro/
-          cd release
-          zip -r ../skins-pro.zip skins-pro/
+          cd dist
+          zip -r ../skins-pro.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
