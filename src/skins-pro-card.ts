@@ -377,7 +377,7 @@ const DEFAULT_CONFIG: DashboardConfig = {
   },
 };
 
-const BUNDLED_SKINS = ['default', 'minecraft'] as const;
+const BUNDLED_SKINS = ['default'] as const;
 const DEFAULT_SKIN = BUNDLED_SKINS[0] || 'default';
 
 const escapeHtml = (value: string): string => value
