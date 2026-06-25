@@ -582,7 +582,9 @@ export class MinecraftDashboardCard extends HTMLElement {
     void this.loadAreas();
     void this.loadEntityRegistry();
     void this.loadDeviceRegistry();
-    this.render();
+    if (this._view !== 'settings') {
+      this.render();
+    }
   }
 
   public getCardSize(): number {
