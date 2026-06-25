@@ -2,5 +2,5 @@ node_modules/
 .DS_Store
 npm-debug.log*
 *.log
-dist/skins-pro/
+dist/default/
 skins-pro/minecraft/
