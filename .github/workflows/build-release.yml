@@ -28,11 +28,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate skin list
+        run: node scripts/build-skins.cjs
+
       - name: Type check
         run: npm run type-check
 
       - name: Build
-        run: npm run build
+        run: npx rollup -c
 
       - name: Commit dist assets
         if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
