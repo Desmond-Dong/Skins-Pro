@@ -4,5 +4,3 @@ npm-debug.log*
 *.log
 src/skins.generated.ts
 skins-pro/minecraft/
-dist/default/
-dist/minecraft/
