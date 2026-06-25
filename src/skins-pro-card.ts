@@ -755,7 +755,7 @@ export class MinecraftDashboardCard extends HTMLElement {
             <div class="env-list">${this.renderEnvironment(language)}</div>
           </section>
           <section class="glass-card panel-energy">
-            <p class="muted">${escapeHtml(translate('todayEnergy'))}</p>
+            <div class="section-title"><h2>${escapeHtml(translate('todayEnergy'))}</h2></div>
             <div class="energy-value">${escapeHtml(energyValue)}<small> ${escapeHtml(energyUnit)}</small></div>
             <div class="bars">${energyBars}</div>
             <div class="energy-footer"><span class="muted">${escapeHtml(this.localizedText(this._config?.energy?.compare_text, this._config?.energy?.compare_text_zh, this._config?.energy?.compare_text_en, language, translate('compareYesterday')))}</span><span class="down">${escapeHtml(compareValue || '--')}</span></div>
