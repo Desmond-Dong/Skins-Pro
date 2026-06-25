@@ -1,39 +1,29 @@
 # Skins Pro
 
-Skins Pro is a simplified Home Assistant Community Dashboard plugin, forked and rebuilt from [dwains-dashboard-next](https://github.com/dwainscheeren/dwains-dashboard-next).
+[![Open your Home Assistant instance and add this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Desmond-Dong&repository=Skins-Pro&category=plugin)
 
-It keeps the convenient "Add dashboard" flow from Community dashboards, but removes the old complex strategy system, blueprint management, editor dialogs, and extra frontend features. The new focus is a single Minecraft-style dashboard experience with:
+A Minecraft-style Home Assistant dashboard card with bilingual (zh/en) support and replaceable resource packs.
 
 - direct add from Home Assistant Community dashboards
 - no runtime dependencies
-- Chinese and English support
+- Chinese and English labels
 - replaceable resource packs for visuals and style
-- automated GitHub Actions build and release pipeline
-- all assets bundled in `dist/` for one-click HACS installation
+- auto-detects entities on first add
+- all assets bundled — install and go
 
 ## Credits
 
-- **Original Project**: [dwains-dashboard-next](https://github.com/dwainscheeren/dwains-dashboard-next) — this project is a simplified rewrite that takes inspiration from its architecture and removes the complex legacy subsystems.
-- **Initial Assets & Design**: [html-card-pro Discussions](https://github.com/ha-china/html-card-pro/discussions/11) — the initial Minecraft-style skin assets and visual design concept were sourced from this community showcase.
-
-## What Changed from the Original
-
-- Removed complex dashboard generation logic
-- Removed blueprint, replacement, settings, and editor subsystems
-- Replaced the old architecture with one minimal dashboard strategy
-- Replaced the old UI with a skin-switchable dashboard card
-- Added bilingual text handling: Chinese and English
-- Added resource pack support through asset path and theme tokens
+- **Original Project**: [dwains-dashboard-next](https://github.com/dwainscheeren/dwains-dashboard-next) — architectural inspiration.
+- **Initial Assets & Design**: [html-card-pro Discussions](https://github.com/ha-china/html-card-pro/discussions/11) — initial skin assets and visual concept.
 
 ## Installation
 
-1. Open HACS in Home Assistant.
-2. Add this repository as a custom repository.
-3. Select the repository type `Dashboard`.
-4. Install `Skins Pro`.
-5. Reload Home Assistant frontend resources if prompted.
-6. Go to `Settings -> Dashboards -> Add dashboard`.
-7. Select `Skins Pro` from Community dashboards.
+[![Open your Home Assistant instance and add this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Desmond-Dong&repository=Skins-Pro&category=plugin)
+
+1. Click the badge above, or go to HACS → Custom repositories and add `https://github.com/Desmond-Dong/Skins-Pro` as a Dashboard.
+2. Install `Skins Pro`.
+3. Reload the Home Assistant frontend if prompted.
+4. Go to `Settings → Dashboards → Add dashboard` and select `Skins Pro`.
 
 ## Default Behavior
 
