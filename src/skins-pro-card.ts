@@ -397,9 +397,9 @@ const normalizeLanguage = (language?: string): 'zh-CN' | 'en' => {
 
 const defaultResourceBasePath = (): string => {
   try {
-    return new URL(`../skins-pro/${DEFAULT_SKIN}`, import.meta.url).toString();
+    return new URL(`./skins-pro/${DEFAULT_SKIN}`, import.meta.url).toString();
   } catch (_error) {
-    return `/local/skins-pro/${DEFAULT_SKIN}`;
+    return `/local/community/skins-pro/skins-pro/${DEFAULT_SKIN}`;
   }
 };
 

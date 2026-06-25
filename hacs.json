@@ -2,5 +2,6 @@
   "name": "Skins Pro",
   "filename": "skins-pro.js",
   "homeassistant": "2026.5.0",
+  "content_in_root": false,
   "hide_default_branch": true
 }
