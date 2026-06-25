@@ -313,14 +313,6 @@ const DEFAULT_ENVIRONMENT: EnvironmentMetricConfig[] = [
 const DEFAULT_CONFIG: DashboardConfig = {
   type: 'custom:skins-pro-card',
   language: 'auto',
-  title_zh: '欢迎回家，冒险家！',
-  title_en: 'Welcome home, adventurer!',
-  subtitle_zh: 'Minecraft Home',
-  subtitle_en: 'Minecraft Home',
-  profile_name_zh: '冒险家',
-  profile_name_en: 'Adventurer',
-  profile_subtitle_zh: 'Minecraft Home',
-  profile_subtitle_en: 'Minecraft Home',
   resource_pack: {
     skin: 'default',
     base_path: '__AUTO__',
@@ -361,7 +353,7 @@ const DEFAULT_CONFIG: DashboardConfig = {
   },
 };
 
-import { SKINS, DEFAULT_SKIN } from './skins.generated';
+import { SKINS, DEFAULT_SKIN, SKIN_STRINGS } from './skins.generated';
 
 const BUNDLED_SKINS: readonly string[] = SKINS;
 
@@ -649,6 +641,11 @@ export class MinecraftDashboardCard extends HTMLElement {
     }
   }
 
+  private skinString(key: string): string {
+    const skin = this.selectedSkin();
+    return SKIN_STRINGS[skin]?.[key] || SKIN_STRINGS[DEFAULT_SKIN]?.[key] || '';
+  }
+
   private render(): void {
     if (!this.shadowRoot || !this._config) {
       return;
@@ -682,8 +679,8 @@ export class MinecraftDashboardCard extends HTMLElement {
             <div class="profile">
               ${this.imageTag('avatar', 'Avatar', 'profile-img')}
               <div class="meta">
-                <h2>${escapeHtml(this.localizedText(this._config.profile_name, this._config.profile_name_zh, this._config.profile_name_en, language))}</h2>
-                <p class="muted">${escapeHtml(this.localizedText(this._config.profile_subtitle, this._config.profile_subtitle_zh, this._config.profile_subtitle_en, language))}</p>
+                <h2>${escapeHtml(this._config.profile_name || this.localizedText(undefined, this._config.profile_name_zh || this.skinString('profile_name_zh'), this._config.profile_name_en || this.skinString('profile_name_en'), language))}</h2>
+                <p class="muted">${escapeHtml(this._config.profile_subtitle || this.localizedText(undefined, this._config.profile_subtitle_zh || this.skinString('profile_subtitle_zh'), this._config.profile_subtitle_en || this.skinString('profile_subtitle_en'), language))}</p>
               </div>
             </div>
             <nav class="menu">
@@ -745,7 +742,7 @@ export class MinecraftDashboardCard extends HTMLElement {
     return `
       <div class="stage-grid">
         <section class="welcome" data-section="home">
-          <h1>${escapeHtml(this.localizedText(this._config?.title, this._config?.title_zh, this._config?.title_en, language))}</h1>
+          <h1>${escapeHtml(this._config?.title || this.localizedText(undefined, this._config?.title_zh || this.skinString('title_zh'), this._config?.title_en || this.skinString('title_en'), language))}</h1>
           <p class="quote">${escapeHtml(quote)}${quoteSource ? `<span class="quote-source"> - ${escapeHtml(quoteSource)}</span>` : ''}</p>
           <div class="weather-row" data-entity="${escapeHtml(this._config?.weather?.entity || '')}" data-action="more-info">
             <div class="weather-state-icon"><ha-icon icon="${weatherIcon}"></ha-icon></div>
