@@ -209,18 +209,18 @@ const DEFAULT_ASSETS: Record<string, string> = {
 };
 
 const DEFAULT_THEME: Record<string, string> = {
-  '--mc-sidebar-width': '190px',
-  '--mc-app-padding': '18px',
-  '--mc-stage-radius': '32px',
-  '--mc-glass-bg': 'rgba(32,14,3,.92)',
-  '--mc-panel-bg': 'rgba(245,240,230,.95)',
-  '--mc-text-main': '#ffffff',
-  '--mc-text-muted': 'rgba(255,255,255,.72)',
-  '--mc-accent-green': '#5ca147',
-  '--mc-accent-blue': '#4d9de6',
-  '--mc-accent-purple': '#7c59c8',
-  '--mc-accent-red': '#d88774',
-  '--mc-accent-brown': '#b18b60',
+  '--sp-sidebar-width': '190px',
+  '--sp-app-padding': '18px',
+  '--sp-stage-radius': '32px',
+  '--sp-glass-bg': 'rgba(32,14,3,.92)',
+  '--sp-panel-bg': 'rgba(245,240,230,.95)',
+  '--sp-text-main': '#ffffff',
+  '--sp-text-muted': 'rgba(255,255,255,.72)',
+  '--sp-accent-green': '#5ca147',
+  '--sp-accent-blue': '#4d9de6',
+  '--sp-accent-purple': '#7c59c8',
+  '--sp-accent-red': '#d88774',
+  '--sp-accent-brown': '#b18b60',
 };
 
 const STRINGS: Record<'zh-CN' | 'en', Record<TranslationKey, string>> = {
@@ -790,16 +790,16 @@ export class MinecraftDashboardCard extends HTMLElement {
     }
 
     if (window.innerWidth <= 760 || this._view === 'rooms') {
-      host.style.setProperty('--mc-runtime-height', 'auto');
-      host.style.setProperty('--mc-runtime-min-height', '100vh');
+      host.style.setProperty('--sp-runtime-height', 'auto');
+      host.style.setProperty('--sp-runtime-min-height', '100vh');
       return;
     }
 
     const rect = this.getBoundingClientRect();
     const paddingBottom = 12;
     const availableHeight = Math.max(560, Math.floor(window.innerHeight - rect.top - paddingBottom));
-    host.style.setProperty('--mc-runtime-height', `${availableHeight}px`);
-    host.style.setProperty('--mc-runtime-min-height', `${availableHeight}px`);
+    host.style.setProperty('--sp-runtime-height', `${availableHeight}px`);
+    host.style.setProperty('--sp-runtime-min-height', `${availableHeight}px`);
   }
 
   private applyThemeVariables(): void {
@@ -812,8 +812,8 @@ export class MinecraftDashboardCard extends HTMLElement {
     Object.entries(DEFAULT_THEME).forEach(([key, value]) => {
       host.style.setProperty(key, theme[key] || value);
     });
-    host.style.setProperty('--mc-base-texture', `url("${this.assetUrl('base')}")`);
-    host.style.setProperty('--mc-stage-texture', `url("${this.assetUrl('stage')}")`);
+    host.style.setProperty('--sp-base-texture', `url("${this.assetUrl('base')}")`);
+    host.style.setProperty('--sp-stage-texture', `url("${this.assetUrl('stage')}")`);
   }
 
   private localizedText(base: string | undefined, zh: string | undefined, en: string | undefined, language: 'zh-CN' | 'en', fallback = ''): string {
