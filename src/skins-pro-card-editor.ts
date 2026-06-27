@@ -201,19 +201,22 @@ export class SkinsProCardEditor extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <link rel="stylesheet" href="${this.themeCssUrl()}">
       <div class="sp-wrap">
-        <div class="sp-card sp-card-row">
-          <label class="sp-field">
-            <span>Skin</span>
-            <select data-text-path="resource_pack.skin">
-              ${SKINS.map((s: string) => `<option value="${s}"${s === (c.resource_pack?.skin || 'modern') ? ' selected' : ''}>${s}</option>`).join('')}
-            </select>
-          </label>
-          ${this.entityPicker('Weather', 'weather.entity', c.weather?.entity || hs.weather_entity || '', ['weather'])}
-          ${this.entityPicker('信息展示 / Info', 'info.entity', c.info?.entity || '', ['input_text', 'sensor'])}
-          <label class="sp-field">
-            <span>全屏</span>
-            <input type="checkbox" data-path="fullscreen"${c.fullscreen ? ' checked' : ''}>
-          </label>
+        <div class="sp-card">
+          <h3>皮肤 / Skin</h3>
+          <div class="sp-card-row">
+            <label class="sp-field">
+              <span>Skin</span>
+              <select data-text-path="resource_pack.skin">
+                ${SKINS.map((s: string) => `<option value="${s}"${s === (c.resource_pack?.skin || 'modern') ? ' selected' : ''}>${s}</option>`).join('')}
+              </select>
+            </label>
+            ${this.entityPicker('Weather', 'weather.entity', c.weather?.entity || hs.weather_entity || '', ['weather'])}
+            ${this.entityPicker('信息展示 / Info', 'info.entity', c.info?.entity || '', ['input_text', 'sensor'])}
+            <label class="sp-field">
+              <span>全屏</span>
+              <input type="checkbox" data-path="fullscreen"${c.fullscreen ? ' checked' : ''}>
+            </label>
+          </div>
         </div>
 
         <div class="sp-card">
