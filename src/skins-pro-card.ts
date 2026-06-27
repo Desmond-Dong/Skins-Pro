@@ -1203,21 +1203,28 @@ export class MinecraftDashboardCard extends LitElement {
       name: area.name,
       image: images[index % images.length],
       summary: this.areaSummaryById(area.area_id, language),
+      counts: this.areaCounts(area.area_id),
     }));
 
     if (requireRealAreas && rooms.length === 0) {
       return nothing;
     }
 
-    return html`${rooms.map((room) => html`
+    return html`${rooms.map((room) => {
+      const countLabel = language === 'zh-CN'
+        ? `${room.counts.devices} 设备 · ${room.counts.entities} 实体`
+        : `${room.counts.devices} devices · ${room.counts.entities} entities`;
+      return html`
       <button class="room">
         ${this.renderImage(room.image || 'room_living', room.name, '')}
         <div class="room-label">
           <h3>${room.name}</h3>
           <p class="muted">${room.summary}</p>
+          <p class="room-stats">${countLabel}</p>
         </div>
       </button>
-    `)}`;
+    `;
+    })}`;
   }
 
   private getRoomsForRender(): RoomConfig[] {
@@ -1342,6 +1349,14 @@ export class MinecraftDashboardCard extends LitElement {
     }
 
     return language === 'zh-CN' ? `${entityIds.length} 个实体` : `${entityIds.length} entities`;
+  }
+
+  private areaCounts(areaId: string): { devices: number; entities: number } {
+    if (!areaId) return { devices: 0, entities: 0 };
+    const entities = (this._entityRegistry || [])
+      .filter((entry) => entry.area_id === areaId && !entry.hidden_by && !entry.disabled_by);
+    const deviceIds = new Set(entities.map((e) => e.device_id).filter(Boolean));
+    return { devices: deviceIds.size, entities: entities.length };
   }
 
   private getRealDevicesForRender(): Array<{
