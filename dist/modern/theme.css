@@ -81,7 +81,7 @@ button { font:inherit; }
 .page-header { display:flex; justify-content:space-between; align-items:flex-start; gap:var(--sp-space-lg); }
 .page-controls { display:flex; align-items:center; gap:var(--sp-space-md); }
 .page-body { min-height:0; }
-.page-body.single-column { display:flex; align-items:flex-start; }
+.page-body.single-column { display:flex; flex-wrap:wrap; gap:var(--sp-space-lg); align-items:flex-start; }
 .page-scroll { min-height:0; max-height:100%; overflow:auto; padding-right:var(--sp-space-xs); }
 .rooms-page-wrap { min-height:0; overflow:visible; }
 .themed-scrollbar::-webkit-scrollbar { width:6px; height:6px; }
@@ -151,6 +151,7 @@ button { font:inherit; }
 .bars { height:72px; display:flex; align-items:end; gap:2px; margin-top:12px; padding:0 var(--sp-space-3xs); }
 .compact-energy-bars { height:48px; margin-top:var(--sp-space-sm); }
 .compact-energy-card { max-width:400px; }
+.maintenance-card { max-width:400px; }
 .compact-energy-list { margin-top:var(--sp-space-xs); }
 .maintenance-block { margin-top:var(--sp-space-md); padding-top:var(--sp-space-md); border-top:var(--sp-border-width) solid var(--sp-maintenance-divider); }
 .maintenance-title { margin-bottom:var(--sp-space-xs); }
