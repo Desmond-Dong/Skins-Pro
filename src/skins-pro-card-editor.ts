@@ -71,7 +71,7 @@ export class SkinsProCardEditor extends HTMLElement {
 
   private themeCssUrl(): string {
     try {
-      return new URL('default/theme.css', import.meta.url).toString();
+      return new URL('modern/theme.css', import.meta.url).toString();
     } catch {
       return '/local/community/skins-pro/modern/theme.css';
     }
