@@ -22,6 +22,7 @@ type HomeAssistant = {
 type AreaRegistryEntry = {
   area_id: string;
   name: string;
+  picture?: string | null;
 };
 
 type EntityRegistryEntry = {
@@ -128,6 +129,7 @@ type DashboardConfig = {
     entity?: string;
   };
   fullscreen?: boolean;
+  use_area_pictures?: boolean;
   environment?: EnvironmentMetricConfig[];
   devices?: DeviceConfig[];
   rooms?: RoomConfig[];
@@ -325,6 +327,7 @@ const DEFAULT_CONFIG: DashboardConfig = {
     entity: 'input_text.daily_quote',
   },
   fullscreen: false,
+  use_area_pictures: false,
   devices: DEFAULT_DEVICES,
   rooms: DEFAULT_ROOMS,
   scenes: DEFAULT_SCENES,
@@ -1202,6 +1205,7 @@ export class MinecraftDashboardCard extends LitElement {
     const rooms = filteredAreas.slice(0, limit || filteredAreas.length).map((area, index) => ({
       name: area.name,
       image: images[index % images.length],
+      picture: area.picture,
       summary: this.areaSummaryById(area.area_id, language),
       counts: this.areaCounts(area.area_id),
     }));
@@ -1210,11 +1214,15 @@ export class MinecraftDashboardCard extends LitElement {
       return nothing;
     }
 
+    const useAreaPics = this._config?.use_area_pictures;
+
     return html`${rooms.map((room) => {
+      const imgSrc = useAreaPics && room.picture ? room.picture : this.assetUrl(room.image || 'room_living');
+      const roomImg = imgSrc ? html`<img alt=${room.name} src=${imgSrc}>` : nothing;
       if (showSummary) {
         return html`
           <button class="room">
-            ${this.renderImage(room.image || 'room_living', room.name, '')}
+            ${roomImg}
             <div class="room-label">
               <h3>${room.name}</h3>
               <p class="muted">${room.summary}</p>
@@ -1227,7 +1235,7 @@ export class MinecraftDashboardCard extends LitElement {
         : `${room.counts.devices} devices · ${room.counts.entities} entities`;
       return html`
         <button class="room">
-          ${this.renderImage(room.image || 'room_living', room.name, '')}
+          ${roomImg}
           <div class="room-label">
             <h3>${room.name}</h3>
             <p class="muted">${room.summary}</p>

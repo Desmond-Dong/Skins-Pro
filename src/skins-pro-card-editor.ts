@@ -219,9 +219,18 @@ export class SkinsProCardEditor extends HTMLElement {
           </div>
         </div>
 
-        <div class="sp-card">
-          <h3>能源 / Energy</h3>
-          ${this.entityPicker('Energy Entity', 'energy.entity', c.energy?.entity || hs.energy_entity || '', ['sensor'])}
+        <div class="sp-row">
+          <div class="sp-card">
+            <h3>能源 / Energy</h3>
+            ${this.entityPicker('Energy Entity', 'energy.entity', c.energy?.entity || hs.energy_entity || '', ['sensor'])}
+          </div>
+          <div class="sp-card">
+            <h3>房间图片 / Room Images</h3>
+            <label>
+              <input type="checkbox" data-path="use_area_pictures"${c.use_area_pictures ? ' checked' : ''}>
+              <span>使用 Home Assistant 区域图片</span>
+            </label>
+          </div>
         </div>
 
         <div class="sp-row">
