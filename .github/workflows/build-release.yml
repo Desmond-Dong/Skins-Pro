@@ -61,10 +61,11 @@ jobs:
       - name: Generate changelog
         if: steps.version.outputs.changed == 'true'
         id: changelog
-        uses: Desmond-Dong/actions/bilingual-changelog@v1
+        uses: Desmond-Dong/actions/bilingual-changelog@main
         with:
-          api-key: ${{ secrets.LLM_API_KEY }}
-          model: ${{ secrets.LLM_MODEL }}
+          llm-api-key: ${{ secrets.LLM_API_KEY }}
+          llm-api-url: ${{ secrets.LLM_API_URL }}
+          llm-model: ${{ secrets.LLM_MODEL }}
 
       - name: Tag and release
         if: steps.version.outputs.changed == 'true'
