@@ -36,6 +36,12 @@ Click the button above, or manually:
 在卡片编辑器的「皮肤 / Skin」字段切换。  
 Switch via the "Skin" field in the card editor.
 
+## 预览 / Preview
+
+| modern | AEON | minecraft |
+|---|---|---|
+| ![modern](screenshots/modern.png) | ![AEON](screenshots/AEON.png) | ![minecraft](screenshots/minecraft.png) |
+
 ## 功能 / Features
 
 - ☀️ 天气与问候 / Weather & greeting
