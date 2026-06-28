@@ -79,7 +79,7 @@ jobs:
 
             ## Installation via HACS
             1. Open HACS → Frontend → Custom repositories
-            2. Add: `https://github.com/Desmond-Dong/Skins-Pro`
+            2. Add: `https://github.com/ha-china/Skins-Pro`
             3. Category: **Dashboard**
             4. Search for "Skins Pro" and install
             5. Clear browser cache and refresh (Ctrl+Shift+R / Cmd+Shift+R)

@@ -15,12 +15,12 @@ Skins Pro is a community Lovelace card with a multi-skin architecture featuring 
 
 ## 安装 / Installation
 
-[![Open your Home Assistant instance and add this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Desmond-Dong&repository=Skins-Pro&category=plugin)
+[![Open your Home Assistant instance and add this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=ha-china&repository=Skins-Pro&category=plugin)
 
 点上面的按钮一键添加，或者手动操作：  
 Click the button above, or manually:
 
-1. HACS → Custom Repositories → 添加 `https://github.com/Desmond-Dong/Skins-Pro`，类别选 Dashboard
+1. HACS → Custom Repositories → 添加 `https://github.com/ha-china/Skins-Pro`，类别选 Dashboard
 2. 安装 Skins Pro / Install Skins Pro
 3. 刷新 Home Assistant 前端 / Refresh Home Assistant frontend
 4. 设置 → 仪表盘 → 添加新仪表盘 → 选 "Skins Pro" / Settings → Dashboards → Add Dashboard → Select "Skins Pro"
@@ -114,7 +114,7 @@ Maps entity domains to icon image filenames. Unmapped domains fall back automati
 ## 开发 / Development
 
 ```bash
-git clone https://github.com/Desmond-Dong/Skins-Pro.git
+git clone https://github.com/ha-china/Skins-Pro.git
 cd Skins-Pro
 npm install
 npm run build       # 构建 / Build
