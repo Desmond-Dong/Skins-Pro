@@ -662,7 +662,7 @@ export class MinecraftDashboardCard extends LitElement {
     }
 
     if (this._view === 'scenes') {
-      return this.renderScenesPage(language, translate);
+      return this.renderScenesPage(translate);
     }
 
     if (this._view === 'automations') {
@@ -718,7 +718,7 @@ export class MinecraftDashboardCard extends LitElement {
           ${this.renderMaintenanceCard(language, translate)}
           <section class="glass-card panel-scenes" data-section="scenes">
             <div class="section-title"><h2>${translate('scenes')}</h2><p class="muted">${translate('modes')}</p></div>
-            <div class="scene-grid">${this.renderHomeScenes(language, translate)}</div>
+            <div class="scene-grid">${this.renderHomeScenes(translate)}</div>
           </section>
         </aside>
       </div>
@@ -905,7 +905,7 @@ export class MinecraftDashboardCard extends LitElement {
     );
   }
 
-  private renderScenesPage(language: 'zh-CN' | 'en', translate: (key: TranslationKey) => string): TemplateResult {
+  private renderScenesPage(translate: (key: TranslationKey) => string): TemplateResult {
     const scenes = this.renderRealScenes(Number.MAX_SAFE_INTEGER);
     return this.renderPageShell(
       translate('scenes'),
@@ -1143,7 +1143,7 @@ export class MinecraftDashboardCard extends LitElement {
     return iconMap[state] || 'mdi:weather-partly-cloudy';
   }
 
-  private renderHomeScenes(language: 'zh-CN' | 'en', translate: (key: TranslationKey) => string): TemplateResult {
+  private renderHomeScenes(translate: (key: TranslationKey) => string): TemplateResult {
     const limit = this._config?.home_limits?.scenes || 6;
     const selectedScenes = this._config?.home_selection?.scenes || [];
     const scenes = this.renderRealScenes(limit, selectedScenes);
