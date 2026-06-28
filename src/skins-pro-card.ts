@@ -10,6 +10,12 @@ type HassEntity = {
 
 type HomeAssistant = {
   language?: string;
+  locale?: {
+    language?: string;
+    time_format?: '12h' | '24h';
+    date_format?: 'DMY' | 'MDY' | 'YMD';
+    number_format?: string;
+  };
   states: Record<string, HassEntity | undefined>;
   callService: (domain: string, service: string, data?: Record<string, any>) => Promise<unknown>;
   callApi?: (method: string, path: string, body?: unknown) => Promise<unknown>;
@@ -185,7 +191,12 @@ type TranslationKey =
   | 'on'
   | 'off'
   | 'open'
-  | 'closed';
+  | 'closed'
+  | 'solar'
+  | 'battery'
+  | 'gas'
+  | 'water'
+  | 'gridReturn';
 
 const DEFAULT_ASSETS: Record<string, string> = {
   base: 'base-texture.jpg',
@@ -239,6 +250,11 @@ const STRINGS: Record<'zh-CN' | 'en', Record<TranslationKey, string>> = {
     off: '关闭',
     open: '打开',
     closed: '关闭',
+    solar: '太阳能',
+    battery: '电池',
+    gas: '燃气',
+    water: '用水',
+    gridReturn: '返送电网',
   },
   en: {
     home: 'Home',
@@ -267,6 +283,11 @@ const STRINGS: Record<'zh-CN' | 'en', Record<TranslationKey, string>> = {
     off: 'Off',
     open: 'Open',
     closed: 'Closed',
+    solar: 'Solar',
+    battery: 'Battery',
+    gas: 'Gas',
+    water: 'Water',
+    gridReturn: 'Grid Return',
   },
 };
 
@@ -519,6 +540,16 @@ export const buildAutoConfig = (hass: HomeAssistant): DashboardConfig => {
   });
 };
 
+type EnergySourceData = {
+  key: TranslationKey;
+  entityId: string;
+  icon: string;
+  unit: string;
+  history: number[];
+  yesterday?: string;
+  today: string;
+};
+
 export class MinecraftDashboardCard extends LitElement {
   private _config?: DashboardConfig;
   private _hass?: HomeAssistant;
@@ -534,6 +565,8 @@ export class MinecraftDashboardCard extends LitElement {
   @state() private _energyYesterday?: string;
   private _energyHistoryEntity?: string;
   private _energyHistoryRequest?: Promise<void>;
+  @state() private _energySources: EnergySourceData[] = [];
+  private _energyPrefsRequest?: Promise<void>;
   private _autoFullscreenDone = false;
   private readonly _handleWindowResize = () => this.applyLayoutHeight();
 
@@ -566,15 +599,21 @@ export class MinecraftDashboardCard extends LitElement {
     this._energyHistory = undefined;
     this._energyYesterday = undefined;
     this._energyHistoryEntity = undefined;
+    this._energySources = [];
     this.requestUpdate();
   }
 
   protected willUpdate(changed: PropertyValues): void {
-    if (changed.has('hass') && this._hass) {
-      void this.loadAreas();
-      void this.loadEntityRegistry();
-      void this.loadDeviceRegistry();
-      void this.loadEnergyHistory();
+    if (this._hass) {
+      if (changed.has('hass') || (this._view === 'energy' && !this._energySources.length)) {
+        void this.fetchEnergyPrefs();
+      }
+      if (changed.has('hass')) {
+        void this.loadAreas();
+        void this.loadEntityRegistry();
+        void this.loadDeviceRegistry();
+        void this.loadEnergyHistory();
+      }
     }
   }
 
@@ -782,11 +821,21 @@ export class MinecraftDashboardCard extends LitElement {
   }
 
   private timeText(language: 'zh-CN' | 'en'): string {
-    return new Intl.DateTimeFormat(language, { hour: '2-digit', minute: '2-digit' }).format(new Date());
+    const locale = this._hass?.locale?.language || language;
+    const fmt24 = this._hass?.locale?.time_format !== '12h';
+    return new Intl.DateTimeFormat(locale, { hour: fmt24 ? '2-digit' : 'numeric', minute: '2-digit', hour12: !fmt24 }).format(new Date());
   }
 
   private dateText(language: 'zh-CN' | 'en'): string {
-    return new Intl.DateTimeFormat(language, { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' }).format(new Date());
+    const locale = this._hass?.locale?.language || language;
+    const fmt = this._hass?.locale?.date_format;
+    let opts: Intl.DateTimeFormatOptions;
+    switch (fmt) {
+      case 'MDY': opts = { month: '2-digit', day: '2-digit', year: 'numeric', weekday: 'short' }; break;
+      case 'YMD': opts = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' }; break;
+      default: opts = { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' }; break;
+    }
+    return new Intl.DateTimeFormat(locale, opts).format(new Date());
   }
 
   private assetUrl(key: string): string {
@@ -929,21 +978,38 @@ export class MinecraftDashboardCard extends LitElement {
     );
   }
 
-  private renderEnergyPage(language: 'zh-CN' | 'en', translate: (key: TranslationKey) => string, energyValue: string, energyUnit: string, compareValue: string, energyBars: TemplateResult): TemplateResult {
+  private renderEnergyPage(language: 'zh-CN' | 'en', translate: (key: TranslationKey) => string, _energyValue: string, _energyUnit: string, _compareValue: string, _energyBars: TemplateResult): TemplateResult {
+    const sources = this._energySources.length > 0 ? this._energySources : (
+      _energyValue !== '--' ? [{
+        key: 'todayEnergy' as TranslationKey,
+        entityId: this._config?.energy?.entity || '',
+        icon: 'mdi:lightning-bolt',
+        unit: this._config?.energy?.unit || 'kWh',
+        history: this._energyHistory || [],
+        yesterday: _compareValue || undefined,
+        today: _energyValue,
+      }] : []
+    );
+
     return this.renderPageShell(
       translate('energy'),
       translate('todayEnergy'),
       html``,
       html`
-        <div class="page-body single-column">
-          <section class="glass-card panel-energy page-energy-card compact-energy-card">
-            <div class="section-title"><h2>${translate('todayEnergy')}</h2></div>
-            <div class="env-list compact-energy-list">
-              <div class="env-row"><div class="dot temp"><ha-icon icon="mdi:lightning-bolt"></ha-icon></div><div class="muted">${translate('todayEnergy')}</div><div class="env-value">${energyValue} ${energyUnit}</div></div>
-              <div class="env-row"><div class="dot hum"><ha-icon icon="mdi:compare-vertical"></ha-icon></div><div class="muted">${this.localizedText(this._config?.energy?.compare_text, this._config?.energy?.compare_text_zh, this._config?.energy?.compare_text_en, language, translate('compareYesterday'))}</div><div class="env-value">${compareValue || '--'}</div></div>
-            </div>
-            <div class="bars compact-energy-bars">${energyBars}</div>
-          </section>
+        <div class="page-body single-column energy-detail-page">
+          ${sources.map((src) => {
+            const bars = this.renderBars(src.history);
+            return html`
+              <section class="glass-card panel-energy page-energy-card compact-energy-card">
+                <div class="section-title"><h2><ha-icon icon="${src.icon}"></ha-icon> ${translate(src.key)}</h2></div>
+                <div class="env-list compact-energy-list">
+                  <div class="env-row"><div class="dot temp"><ha-icon icon="${src.icon}"></ha-icon></div><div class="muted">${translate(src.key)}</div><div class="env-value">${src.today} ${src.unit}</div></div>
+                  <div class="env-row"><div class="dot hum"><ha-icon icon="mdi:compare-vertical"></ha-icon></div><div class="muted">${translate('compareYesterday')}</div><div class="env-value">${src.yesterday || '--'}</div></div>
+                </div>
+                <div class="bars compact-energy-bars">${bars}</div>
+              </section>
+            `;
+          })}
           ${this.renderMaintenanceCard(language, translate)}
         </div>
       `
@@ -1687,6 +1753,140 @@ export class MinecraftDashboardCard extends LitElement {
     await this._deviceRegistryRequest;
   }
 
+  private async fetchEnergyPrefs(): Promise<void> {
+    if (!this._hass?.connection?.sendMessagePromise || this._energySources.length > 0) {
+      return;
+    }
+    if (this._energyPrefsRequest) {
+      await this._energyPrefsRequest;
+      return;
+    }
+
+    const tryCommand = async (cmd: string): Promise<boolean> => {
+      try {
+        const prefs = await this._hass!.connection!.sendMessagePromise<{
+          energy_sources?: Array<{
+            type: string;
+            flow_from?: Array<{ stat_energy_from?: string }>;
+            flow_to?: Array<{ stat_energy_to?: string }>;
+            stat_energy_from?: string | null;
+            stat_energy_to?: string | null;
+            stat_soc?: string;
+          }>;
+        }>({ type: cmd });
+        if (!prefs?.energy_sources?.length) return false;
+
+        const gridEntity = this._config?.energy?.entity;
+        const ids: string[] = [];
+        const entries: Array<{ key: TranslationKey; entityId: string; icon: string; unit: string }> = [];
+
+        for (const src of prefs.energy_sources) {
+          if (src.type === 'grid') {
+            if (src.flow_from || src.flow_to) {
+              for (const f of src.flow_from ?? []) {
+                if (f.stat_energy_from && !gridEntity) {
+                  ids.push(f.stat_energy_from);
+                  entries.push({ key: 'todayEnergy', entityId: f.stat_energy_from, icon: 'mdi:lightning-bolt', unit: 'kWh' });
+                }
+              }
+              for (const f of src.flow_to ?? []) {
+                if (f.stat_energy_to) {
+                  ids.push(f.stat_energy_to);
+                  entries.push({ key: 'gridReturn', entityId: f.stat_energy_to, icon: 'mdi:export-variant', unit: 'kWh' });
+                }
+              }
+            } else {
+              if (src.stat_energy_from && !gridEntity) {
+                ids.push(src.stat_energy_from);
+                entries.push({ key: 'todayEnergy', entityId: src.stat_energy_from, icon: 'mdi:lightning-bolt', unit: 'kWh' });
+              }
+              if (src.stat_energy_to) {
+                ids.push(src.stat_energy_to);
+                entries.push({ key: 'gridReturn', entityId: src.stat_energy_to, icon: 'mdi:export-variant', unit: 'kWh' });
+              }
+            }
+          } else if (src.type === 'solar' && src.stat_energy_from) {
+            ids.push(src.stat_energy_from);
+            entries.push({ key: 'solar', entityId: src.stat_energy_from, icon: 'mdi:solar-power', unit: 'kWh' });
+          } else if (src.type === 'battery') {
+            if (src.stat_energy_from) {
+              ids.push(src.stat_energy_from);
+              entries.push({ key: 'battery', entityId: src.stat_energy_from, icon: 'mdi:battery', unit: 'kWh' });
+            }
+            if (src.stat_energy_to) {
+              ids.push(src.stat_energy_to);
+              entries.push({ key: 'battery', entityId: src.stat_energy_to, icon: 'mdi:battery-charging', unit: 'kWh' });
+            }
+          } else if (src.type === 'gas' && src.stat_energy_from) {
+            ids.push(src.stat_energy_from);
+            entries.push({ key: 'gas', entityId: src.stat_energy_from, icon: 'mdi:fire', unit: 'm³' });
+          } else if (src.type === 'water' && src.stat_energy_from) {
+            ids.push(src.stat_energy_from);
+            entries.push({ key: 'water', entityId: src.stat_energy_from, icon: 'mdi:water', unit: 'm³' });
+          }
+        }
+
+        if (gridEntity) {
+          ids.unshift(gridEntity);
+          entries.unshift({ key: 'todayEnergy', entityId: gridEntity, icon: 'mdi:lightning-bolt', unit: this._config?.energy?.unit || 'kWh' });
+        }
+
+        if (entries.length === 0) return false;
+
+        const now = new Date();
+        const start = new Date(now);
+        start.setDate(start.getDate() - 30);
+        start.setHours(0, 0, 0, 0);
+
+        const stats = await this._hass!.connection!.sendMessagePromise<Record<string, { statistics: Array<{ sum: number | null; state: number | null }> }>>({
+          type: 'statistics_during_period',
+          start_time: start.toISOString(),
+          end_time: now.toISOString(),
+          statistic_ids: ids,
+          period: 'day',
+        });
+
+        const result: EnergySourceData[] = entries.map((e) => {
+          const raw = stats?.[e.entityId]?.statistics ?? [];
+          const history = raw.map((entry) => {
+            if (entry.sum !== null && entry.sum !== undefined) return Math.round(entry.sum * 100) / 100;
+            if (entry.state !== null && entry.state !== undefined) return Math.round(entry.state * 100) / 100;
+            return 0;
+          });
+          const yesterday = history.length >= 2 ? history[history.length - 2] : (history.length === 1 ? history[0] : undefined);
+          const state = this.stateValue(e.entityId);
+          return {
+            key: e.key,
+            entityId: e.entityId,
+            icon: e.icon,
+            unit: e.unit,
+            history,
+            yesterday: yesterday !== undefined ? this.formatNumber(String(yesterday), 1) : undefined,
+            today: state !== 'unavailable' && state !== 'unknown' && state ? this.formatNumber(state, 1) : '--',
+          };
+        });
+
+        this._energySources = result;
+
+        const primary = result.find((r) => r.key === 'todayEnergy') || result[0];
+        this._energyHistory = primary.history;
+        this._energyYesterday = primary.yesterday;
+
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    this._energyPrefsRequest = (async () => {
+      const ok = await tryCommand('energy/get_prefs');
+      if (!ok) await tryCommand('energy/get_preferences');
+    })();
+
+    await this._energyPrefsRequest;
+    this._energyPrefsRequest = undefined;
+  }
+
   private async loadEnergyHistory(): Promise<void> {
     const entityId = this._config?.energy?.entity;
     if (!entityId || !this._hass?.connection?.sendMessagePromise) {
@@ -1695,6 +1895,11 @@ export class MinecraftDashboardCard extends LitElement {
     if (this._energyHistory && this._energyHistoryEntity === entityId) {
       return;
     }
+    if (this._energyPrefsRequest) {
+      await this._energyPrefsRequest;
+      return;
+    }
+    if (this._energySources.length > 0) return;
     if (this._energyHistoryRequest) {
       await this._energyHistoryRequest;
       return;
