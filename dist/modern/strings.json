@@ -29,6 +29,7 @@
     "person": "button",
     "vacuum": "fan",
     "device_tracker": "button",
+    "valve": "switch",
     "update": "button"
   }
 }

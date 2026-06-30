@@ -9,12 +9,27 @@
   "profile_subtitle_en": "Minecraft Home",
   "icon_map": {
     "light": "light",
+    "input_boolean": "light",
+    "button": "garden",
+    "scene": "light",
     "climate": "climate",
+    "water_heater": "garden",
+    "humidifier": "garden",
     "media_player": "speaker",
+    "remote": "garden",
     "lock": "lock",
     "binary_sensor": "lock",
+    "alarm_control_panel": "lock",
     "switch": "garden",
     "fan": "garden",
-    "cover": "garden"
+    "cover": "garden",
+    "camera": "light",
+    "valve": "garden",
+    "automation": "garden",
+    "sensor": "light",
+    "person": "garden",
+    "vacuum": "garden",
+    "device_tracker": "speaker",
+    "update": "garden"
   }
 }
