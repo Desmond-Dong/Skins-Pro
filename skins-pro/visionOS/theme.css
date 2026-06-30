@@ -1837,7 +1837,7 @@ button {
   color: var(--sp-text-secondary);
 }
 
-.sp-card input,
+.sp-card input:not([type="checkbox"]),
 .sp-card select {
   min-height: 40px;
   padding: var(--sp-space-xs) var(--sp-space-sm);
