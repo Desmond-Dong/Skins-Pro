@@ -27,7 +27,6 @@
   --glass-highlight:       0 0 0 0 transparent;
 
   /* ---- Background & Overlay ---- */
-  --sp-base-texture:  none;
   --sp-stage-texture: none;
   --sp-bg:            transparent;
 
@@ -196,10 +195,10 @@ button {
   display: grid;
   grid-template-columns: var(--sp-sidebar-width) minmax(0, 1fr);
   gap: var(--sp-space-lg);
-  background-image: var(--sp-app-overlay), linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35)), var(--sp-base-texture);
-  background-size: cover, cover, cover;
-  background-position: center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-image: var(--sp-app-overlay), linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.35));
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
   background-color: var(--sp-bg);
   overflow: clip;
 }

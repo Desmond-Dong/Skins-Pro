@@ -425,8 +425,10 @@ export class MinecraftDashboardCard extends LitElement {
         host.style.setProperty(key, value);
       }
     }
-    host.style.setProperty('--sp-base-texture', `url("${assetUrl(this._config, 'base')}")`);
     host.style.setProperty('--sp-stage-texture', `url("${assetUrl(this._config, 'stage')}")`);
+    if (selectedSkin(this._config) !== 'visionOS') {
+      host.style.setProperty('--sp-base-texture', `url("${assetUrl(this._config, 'base')}")`);
+    }
   }
 
   // ─── Asset helpers (delegate to utils) ──────────────────
