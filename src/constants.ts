@@ -33,6 +33,11 @@ export const STRINGS: Record<Language, Record<TranslationKey, string>> = {
     gas: '燃气',
     water: '用水',
     gridReturn: '返送电网',
+    allRooms: '全部房间',
+    allTypes: '全部类型',
+    turnOnAll: '全部开启',
+    turnOffAll: '全部关闭',
+    confirmAction: '确认执行此操作？',
   },
   en: {
     home: 'Home',
@@ -66,6 +71,11 @@ export const STRINGS: Record<Language, Record<TranslationKey, string>> = {
     gas: 'Gas',
     water: 'Water',
     gridReturn: 'Grid Return',
+    allRooms: 'All rooms',
+    allTypes: 'All types',
+    turnOnAll: 'Turn on all',
+    turnOffAll: 'Turn off all',
+    confirmAction: 'Confirm this operation?',
   },
 };
 

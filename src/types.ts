@@ -209,7 +209,12 @@ export type TranslationKey =
   | 'battery'
   | 'gas'
   | 'water'
-  | 'gridReturn';
+  | 'gridReturn'
+  | 'allRooms'
+  | 'allTypes'
+  | 'turnOnAll'
+  | 'turnOffAll'
+  | 'confirmAction';
 
 export type DeviceColor = 'yellow' | 'green' | 'blue' | 'purple' | 'red' | 'brown';
 

@@ -64,6 +64,8 @@ export class MinecraftDashboardCard extends LitElement {
 
   @state() private _view: ViewName = 'home';
   @state() private _deviceGrouping: 'area' | 'domain' = 'area';
+  @state() private _filterRoom = '';
+  @state() private _filterType = '';
 
   @state() private _areas?: AreaRegistryEntry[];
   @state() private _entityRegistry?: EntityRegistryEntry[];
@@ -468,6 +470,8 @@ export class MinecraftDashboardCard extends LitElement {
   // ─── Devices page ───────────────────────────────────────
 
   private renderDevicesPage(language: Language, translate: (key: TranslationKey) => string): TemplateResult {
+    const rooms = this.getDeviceRooms();
+    const types = this.getDeviceTypes();
     return this.renderPageShell(
       translate('devices'),
       translate('quickControl'),
@@ -478,6 +482,18 @@ export class MinecraftDashboardCard extends LitElement {
         </div>
       `,
       html`
+        <div class="filter-bar">
+          <select class="filter-select" @change=${(e: Event) => { this._filterRoom = (e.target as HTMLSelectElement).value; }}>
+            <option value="">${translate('allRooms')}</option>
+            ${rooms.map((r) => html`<option value="${r}" .selected=${r === this._filterRoom}>${r}</option>`)}
+          </select>
+          <select class="filter-select" @change=${(e: Event) => { this._filterType = (e.target as HTMLSelectElement).value; }}>
+            <option value="">${translate('allTypes')}</option>
+            ${types.map((t) => html`<option value="${t}" .selected=${t === this._filterType}>${t}</option>`)}
+          </select>
+          <button class="action-btn" @click=${() => this.batchControl('on', translate)}>${translate('turnOnAll')}</button>
+          <button class="action-btn" @click=${() => this.batchControl('off', translate)}>${translate('turnOffAll')}</button>
+        </div>
         <div class="page-scroll themed-scrollbar">
           ${this.renderRealDeviceGroups(language, translate)}
         </div>
@@ -988,7 +1004,7 @@ export class MinecraftDashboardCard extends LitElement {
 
   // ─── Device list for render ─────────────────────────────
 
-  private getRealDevicesForRender(): RenderedDevice[] {
+  private getRealDevicesForRender(ignoreFilter = false): RenderedDevice[] {
     if (!this._deviceRegistry || !this._entityRegistry || !this._hass) return [];
 
     const colors: RenderedDevice['color'][] = ['yellow', 'green', 'blue', 'purple', 'red', 'brown'];
@@ -1024,7 +1040,21 @@ export class MinecraftDashboardCard extends LitElement {
           color: colors[index % colors.length]!,
         };
       })
-      .filter((device): device is RenderedDevice => Boolean(device));
+      .filter((device): device is RenderedDevice => Boolean(device))
+      .filter((d) => {
+        if (ignoreFilter) return true;
+        if (this._filterRoom && d.subtitle !== this._filterRoom) return false;
+        if (this._filterType && d.detail !== this._filterType) return false;
+        return true;
+      });
+  }
+
+  private getDeviceRooms(): string[] {
+    return [...new Set(this.getRealDevicesForRender(true).map((d) => d.subtitle).filter(Boolean))].sort();
+  }
+
+  private getDeviceTypes(): string[] {
+    return [...new Set(this.getRealDevicesForRender(true).map((d) => d.detail))].sort();
   }
 
   private renderRealDeviceGroups(language: Language, translate: (key: TranslationKey) => string): TemplateResult | typeof nothing {
@@ -1285,6 +1315,15 @@ export class MinecraftDashboardCard extends LitElement {
     const [domain] = entityId.split('.');
     if (!domain) return;
     await this._hass.callService(domain, 'toggle', { entity_id: entityId });
+  }
+
+  private async batchControl(state: 'on' | 'off', translate: (key: TranslationKey) => string): Promise<void> {
+    const devices = this.getRealDevicesForRender();
+    const controllable = devices.filter((d) => CONTROLLABLE_DOMAINS.has(d.detail));
+    if (controllable.length === 0) return;
+    if (!confirm(translate('confirmAction'))) return;
+    const service = state === 'on' ? 'turn_on' : 'turn_off';
+    await Promise.all(controllable.map((d) => this._hass?.callService(d.detail, service, { entity_id: d.entityId })));
   }
 
   private moreInfo(entityId: string): void {

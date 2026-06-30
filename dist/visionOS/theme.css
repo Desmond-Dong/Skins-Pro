@@ -670,6 +670,63 @@ button {
   color: var(--sp-text-primary);
 }
 
+/* ---- Filter Bar ---- */
+
+.filter-bar {
+  display: flex;
+  gap: var(--sp-space-sm);
+  align-items: center;
+  margin-bottom: var(--sp-space-md);
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  min-height: 36px;
+  padding: 0 var(--sp-space-sm);
+  border: var(--sp-border-w) solid var(--sp-border-glass);
+  border-radius: var(--sp-radius-infinite);
+  background: var(--glass-thick);
+  color: var(--sp-text-secondary);
+  font: inherit;
+  font-size: var(--sp-font-xs);
+  font-weight: var(--sp-font-weight-medium);
+  backdrop-filter: var(--sp-blur-sm);
+  -webkit-backdrop-filter: var(--sp-blur-sm);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.filter-select option {
+  background: #1C1C1E;
+  color: #FFFFFF;
+}
+
+.action-btn {
+  min-height: 36px;
+  border: var(--sp-border-w) solid var(--sp-border-glass);
+  border-radius: var(--sp-radius-infinite);
+  padding: 0 14px;
+  background: var(--glass-thick);
+  color: var(--sp-text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--sp-font-xs);
+  font-weight: var(--sp-font-weight-medium);
+  backdrop-filter: var(--sp-blur-sm);
+  -webkit-backdrop-filter: var(--sp-blur-sm);
+  transition:
+    background var(--sp-duration-fast) var(--sp-ease-glass),
+    color var(--sp-duration-fast) var(--sp-ease-glass);
+}
+
+.action-btn:hover {
+  background: var(--glass-ultra-thick);
+  color: var(--sp-text-primary);
+}
+
 /* ==========================================================================
    13. Device Cards
    ========================================================================== */
