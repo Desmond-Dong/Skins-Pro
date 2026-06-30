@@ -206,7 +206,7 @@ const e={base:"base-texture.jpg",stage:"background.jpg",theme_css:"theme.css",av
         <div class="section-title"><h2>${t}</h2><p class="muted">${String(i.length)}</p></div>
         <div class="devices devices-page-grid">
           ${i.map(t=>{const i=Le(t.state,e),s=["on","playing","cool","heat","armed","locked","open"].includes(t.state),r=s?`device-on-${t.color}`:"unavailable"===t.state?"device-unavailable":"device-off",a=ze(n,t.entityId.split(".")[0]||"sensor");return K`
-              <button class="device ${r}" @click=${()=>this.handleAction(t.entityId,"more-info")}>
+              <button class="device ${r}" @click=${()=>this.handleAction(t.entityId,Ke.has(t.detail)?"toggle":"more-info")}>
                 <div class="device-top">
                   ${this.renderImage(a,t.name,"item-img")}
                   <div class="tag-stack"><div class="status">${i}</div></div>

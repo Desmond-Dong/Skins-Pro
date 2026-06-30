@@ -1083,7 +1083,7 @@ export class MinecraftDashboardCard extends LitElement {
             const statusClass = active ? `device-on-${device.color}` : (device.state === 'unavailable' ? 'device-unavailable' : 'device-off');
             const assetKey = assetKeyForDomain(skin, device.entityId.split('.')[0] || 'sensor');
             return html`
-              <button class="device ${statusClass}" @click=${() => this.handleAction(device.entityId, 'more-info')}>
+              <button class="device ${statusClass}" @click=${() => this.handleAction(device.entityId, CONTROLLABLE_DOMAINS.has(device.detail) ? 'toggle' : 'more-info')}>
                 <div class="device-top">
                   ${this.renderImage(assetKey, device.name, 'item-img')}
                   <div class="tag-stack"><div class="status">${stateLabel}</div></div>
