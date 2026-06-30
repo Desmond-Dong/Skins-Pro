@@ -34,6 +34,7 @@ Click the button above, or manually:
 |---|---|---|
 | **modern**（默认 / default） | 白色玻璃 / White glassmorphism | 毛玻璃效果，高分辨率图片，温润蓝白配色 / Frosted glass, high-res images, clean blue-white palette |
 | **AEON** | 暗色奢华 / Dark luxury | 深邃黑底，蓝色辉光，毛玻璃卡片，影院级阴影 / Deep blacks, blue glow, glassmorphism, cinematic shadows |
+| **visionOS** | 毛玻璃 / Frosted glass | Apple VisionOS 灵感，纯平玻璃，白色文字，沉浸式模糊 / Apple VisionOS-inspired, flat glass, white text, immersive blur |
 | **minecraft** | Minecraft 主题 / Minecraft theme | 深色纹理背景，暖色调，Steve 头像 / Dark textured background, warm tones, Steve avatar |
 
 在卡片编辑器的「皮肤 / Skin」字段切换。  
@@ -41,9 +42,9 @@ Switch via the "Skin" field in the card editor.
 
 ## 预览 / Preview
 
-| modern | AEON | minecraft |
-|---|---|---|
-| ![modern](screenshots/modern.png) | ![AEON](screenshots/AEON.png) | ![minecraft](screenshots/minecraft.png) |
+| modern | AEON | visionOS | minecraft |
+|---|---|---|---|
+| ![modern](screenshots/modern.png) | ![AEON](screenshots/AEON.png) | ![visionOS](screenshots/visionOS.png) | ![minecraft](screenshots/minecraft.png) |
 
 ### 皮肤切换演示 / Skin Switching Demo
 
