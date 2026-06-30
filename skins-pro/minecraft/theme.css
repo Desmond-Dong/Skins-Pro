@@ -283,16 +283,21 @@ button { font:inherit; }
 .mc-app[data-view="energy"] .panel-energy { display:block; min-height:0; height:auto; }
 @media (max-width: 1180px) {
   .mc-app { grid-template-columns:84px minmax(0,1fr); height:auto; min-height:100vh; overflow:visible; }
+  .profile { justify-content:center; padding:0; }
   .profile .meta,.nav-button span,.sidebar-art { display:none; }
+  .profile-img { width:44px; height:44px; }
+  .nav-button { justify-content:center; padding:0; }
   .stage { height:auto; overflow:visible; }
-  .stage-grid { grid-template-columns:1fr; grid-template-areas:"welcome" "bottom" "side"; grid-template-rows:auto minmax(0,1fr) auto; }
+  .stage-grid { height:auto; overflow:visible; grid-template-columns:minmax(0,1fr) 240px; grid-template-areas:"welcome side" "bottom side"; grid-template-rows:auto minmax(0,1fr); }
   .side { height:auto; grid-template-rows:auto; overflow:visible; }
-  .devices { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .devices { grid-template-columns:repeat(4,minmax(0,1fr)); }
   .devices-page-grid,.settings-grid,.security-cameras { grid-template-columns:1fr 1fr; }
 .scenes-page { grid-template-columns:repeat(3,1fr); }
   .mc-app[data-view="devices"] .devices,
   .mc-app[data-view="rooms"] .rooms,
   .mc-app[data-view="scenes"] .scenes-page { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .mc-app[data-view="rooms"] .room { min-height:90px; }
+  .rooms { gap:var(--sp-space-sm); }
 }
 @media (max-width: 760px) {
   :host {

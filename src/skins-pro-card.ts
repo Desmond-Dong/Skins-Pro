@@ -303,7 +303,7 @@ export class MinecraftDashboardCard extends LitElement {
         ${registriesLoading}
         <div class="mc-app" data-view=${this._view}>
           <aside class="sidebar">
-            <div class="profile">
+            <div class="profile" @click=${() => this.toggleKioskFullscreen()}>
               ${this.renderImage('avatar', 'Avatar', 'profile-img')}
               <div class="meta">
                 <h2>${this._config.profile_name || localizedText(undefined, this._config.profile_name_zh || skinString(selectedSkin(this._config), 'profile_name_zh'), this._config.profile_name_en || skinString(selectedSkin(this._config), 'profile_name_en'), language)}</h2>
@@ -313,7 +313,7 @@ export class MinecraftDashboardCard extends LitElement {
             <nav class="menu">
               ${this.renderNav(language)}
             </nav>
-                        <div class="sidebar-art" @click=${() => { const host=this.shadowRoot?.host as HTMLElement|undefined;if(document.body.classList.contains('skins-pro-kiosk')){toggleKiosk();if(host)requestAnimationFrame(()=>{const r=host.getBoundingClientRect();const h=Math.max(560,Math.floor(window.innerHeight-r.top));host.style.setProperty('--sp-runtime-height',`${h}px`);host.style.setProperty('--sp-runtime-min-height',`${h}px`)})}else{if(host){const h=Math.max(560,Math.floor(window.innerHeight));host.style.setProperty('--sp-runtime-height',`${h}px`);host.style.setProperty('--sp-runtime-min-height',`${h}px`)}toggleKiosk()}}}>${this.renderImage('decor', 'Decor', '')}</div>
+                        <div class="sidebar-art" @click=${() => this.toggleKioskFullscreen()}>${this.renderImage('decor', 'Decor', '')}</div>
           </aside>
           <main class="stage">
             ${this.renderStageContent(language, translate, weatherIconName, quote, energyValue, energyUnit, compareValue, energyBars)}
@@ -1318,6 +1318,26 @@ export class MinecraftDashboardCard extends LitElement {
     const [domain] = entityId.split('.');
     if (!domain) return;
     await this._hass.callService(domain, 'toggle', { entity_id: entityId });
+  }
+
+  private toggleKioskFullscreen(): void {
+    const host = this.shadowRoot?.host as HTMLElement | undefined;
+    if (document.body.classList.contains('skins-pro-kiosk')) {
+      toggleKiosk();
+      if (host) requestAnimationFrame(() => {
+        const r = host.getBoundingClientRect();
+        const h = Math.max(560, Math.floor(window.innerHeight - r.top));
+        host.style.setProperty('--sp-runtime-height', `${h}px`);
+        host.style.setProperty('--sp-runtime-min-height', `${h}px`);
+      });
+    } else {
+      if (host) {
+        const h = Math.max(560, Math.floor(window.innerHeight));
+        host.style.setProperty('--sp-runtime-height', `${h}px`);
+        host.style.setProperty('--sp-runtime-min-height', `${h}px`);
+      }
+      toggleKiosk();
+    }
   }
 
   private async batchControl(state: 'on' | 'off', translate: (key: TranslationKey) => string): Promise<void> {

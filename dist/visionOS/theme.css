@@ -1559,10 +1559,25 @@ button {
     overflow: visible;
   }
 
+  .profile {
+    justify-content: center;
+    padding: 0;
+  }
+
   .profile .meta,
   .nav-button span,
   .sidebar-art {
     display: none;
+  }
+
+  .profile-img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav-button {
+    justify-content: center;
+    padding: 0;
   }
 
   .stage {
@@ -1571,12 +1586,13 @@ button {
   }
 
   .stage-grid {
-    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+    grid-template-columns: minmax(0, 1fr) 240px;
     grid-template-areas:
-      "welcome"
-      "bottom"
-      "side";
-    grid-template-rows: auto minmax(0, 1fr) auto;
+      "welcome  side"
+      "bottom   side";
+    grid-template-rows: auto minmax(0, 1fr);
   }
 
   .side {
@@ -1586,7 +1602,7 @@ button {
   }
 
   .devices {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .devices-page-grid,
@@ -1598,6 +1614,14 @@ button {
   .mc-app[data-view="rooms"] .rooms,
   .mc-app[data-view="scenes"] .scenes-page {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .mc-app[data-view="rooms"] .room {
+    min-height: 90px;
+  }
+
+  .rooms {
+    gap: var(--sp-space-sm);
   }
 }
 
