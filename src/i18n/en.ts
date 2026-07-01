@@ -37,6 +37,8 @@ const en: Record<TranslationKey, string> = {
   turnOnAll: 'Turn on all',
   turnOffAll: 'Turn off all',
   confirmAction: 'Confirm this operation?',
+  uploadBackground: 'Upload background',
+  clearBackground: 'Clear background',
 };
 
 export default en;

@@ -425,7 +425,8 @@ export class MinecraftDashboardCard extends LitElement {
         host.style.setProperty(key, value);
       }
     }
-    host.style.setProperty('--sp-stage-texture', `url("${assetUrl(this._config, 'stage')}")`);
+    const stageUrl = this._config?.background_image || assetUrl(this._config, 'stage');
+    host.style.setProperty('--sp-stage-texture', `url("${stageUrl}")`);
     if (selectedSkin(this._config) !== 'visionOS') {
       host.style.setProperty('--sp-base-texture', `url("${assetUrl(this._config, 'base')}")`);
     }

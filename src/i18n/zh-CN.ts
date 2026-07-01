@@ -37,6 +37,8 @@ const zh: Record<TranslationKey, string> = {
   turnOnAll: '全部开启',
   turnOffAll: '全部关闭',
   confirmAction: '确认执行此操作？',
+  uploadBackground: '上传背景图',
+  clearBackground: '清除背景图',
 };
 
 export default zh;

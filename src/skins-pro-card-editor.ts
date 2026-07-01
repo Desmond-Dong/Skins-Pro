@@ -195,6 +195,7 @@ export class SkinsProCardEditor extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <link rel="stylesheet" href="${this.themeCssUrl()}">
+      <style>.bg-preview{max-width:100%;max-height:100px;border-radius:8px;margin-top:8px;display:block}</style>
       <div class="sp-wrap">
         <div class="sp-card">
           <h3>皮肤 / Skin</h3>
@@ -225,6 +226,17 @@ export class SkinsProCardEditor extends HTMLElement {
               <input type="checkbox" data-path="use_area_pictures"${c.use_area_pictures ? ' checked' : ''}>
               <span>使用 Home Assistant 区域图片</span>
             </label>
+          </div>
+        </div>
+
+        <div class="sp-row">
+          <div class="sp-card">
+            <h3>背景图 / Background</h3>
+            <div class="sp-card-row">
+              <input type="file" accept="image/*" data-bg-upload>
+              ${c.background_image ? `<img class="bg-preview" src="${c.background_image}"><button class="sp-del" data-bg-clear>✕</button>` : ''}
+              ${!c.background_image ? '' : ''}
+            </div>
           </div>
         </div>
 
@@ -309,6 +321,38 @@ export class SkinsProCardEditor extends HTMLElement {
     this.shadowRoot.querySelectorAll<HTMLElement>('[data-del-area-path]').forEach((btn) => {
       btn.addEventListener('click', () => this.setListItem(btn.getAttribute('data-del-area-path') || '', Number(btn.getAttribute('data-del-area-index')), ''));
     });
+
+    const uploadInput = this.shadowRoot.querySelector<HTMLInputElement>('input[data-bg-upload]');
+    if (uploadInput) {
+      uploadInput.addEventListener('change', async () => {
+        const file = uploadInput.files?.[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+          const resp = await fetch('/api/file_upload', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${this._hass?.auth?.data?.access_token || ''}` },
+            body: formData,
+          });
+          const path = await resp.text();
+          if (path) this.setField('background_image', path);
+        } catch {
+          // fallback: read as data URL if upload API fails
+          const reader = new FileReader();
+          reader.onload = () => {
+            const dataUrl = reader.result as string;
+            if (dataUrl) this.setField('background_image', dataUrl);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    const clearBtn = this.shadowRoot.querySelector<HTMLElement>('[data-bg-clear]');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => this.setField('background_image', ''));
+    }
   }
 }
 
