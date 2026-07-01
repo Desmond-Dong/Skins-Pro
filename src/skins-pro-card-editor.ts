@@ -207,20 +207,35 @@ export class SkinsProCardEditor extends HTMLElement {
       <div class="sp-wrap">
         <div class="sp-card">
           <h3>${this._loc('editorSkin')}</h3>
-          <div class="sp-card-row">
-            <label class="sp-field">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+            <label class="sp-field" style="flex:1;min-width:140px">
               <span>Skin</span>
               <select data-text-path="resource_pack.skin">
                 ${(SKINS as readonly string[]).map((s: string) => `<option value="${s}"${s === (c.resource_pack?.skin || 'modern') ? ' selected' : ''}>${s}</option>`).join('')}
               </select>
             </label>
-            ${this.entityPicker('Weather', 'weather.entity', c.weather?.entity || hs.weather_entity || '', ['weather'])}
-          ${this.entityPicker(this._loc('editorInfo'), 'info.entity', c.info?.entity || '', ['input_text', 'sensor'])}
-          <label>
-            <input type="checkbox" data-path="fullscreen"${c.fullscreen ? ' checked' : ''}>
-            <span>${this._loc('editorFullscreen')}</span>
-          </label>
+            <label class="sp-field" style="min-width:120px;display:grid;justify-items:center;align-content:center">
+              <span>${this._loc('editorUseAreaPictures')}</span>
+              <input type="checkbox" data-path="use_area_pictures"${c.use_area_pictures ? ' checked' : ''} style="width:18px;height:18px;margin:0">
+            </label>
+            <label class="sp-field" style="min-width:80px;display:grid;justify-items:center;align-content:center">
+              <span>${this._loc('editorFullscreen')}</span>
+              <input type="checkbox" data-path="fullscreen"${c.fullscreen ? ' checked' : ''} style="width:18px;height:18px;margin:0">
+            </label>
           </div>
+          <label class="sp-field">
+            <span>Background</span>
+            <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:8px">
+              <input type="file" accept="image/*" data-bg-upload style="flex:1;min-width:0">
+              ${c.background_image ? `<img class="bg-preview" src="${c.background_image}"><button class="sp-del" data-bg-clear>✕</button>` : ''}
+              ${!c.background_image ? '' : ''}
+            </div>
+          </label>
+        </div>
+
+        <div class="sp-row">
+          <div class="sp-card">${this.entityPicker('Weather', 'weather.entity', c.weather?.entity || hs.weather_entity || '', ['weather'])}</div>
+          <div class="sp-card">${this.entityPicker(this._loc('editorInfo'), 'info.entity', c.info?.entity || '', ['input_text', 'sensor'])}</div>
         </div>
 
         <div class="sp-row" style="grid-template-columns:1fr 1fr 1fr">
@@ -235,24 +250,6 @@ export class SkinsProCardEditor extends HTMLElement {
           <div class="sp-card">
             <h3>${this._loc('editorCamera')}</h3>
             ${this.entityPicker('Camera', 'camera.entity', c.camera?.entity || '', ['camera'])}
-          </div>
-        </div>
-
-        <div class="sp-row">
-          <div class="sp-card">
-            <h3>${this._loc('editorRoomImages')}</h3>
-            <label>
-              <input type="checkbox" data-path="use_area_pictures"${c.use_area_pictures ? ' checked' : ''}>
-              <span>${this._loc('editorUseAreaPictures')}</span>
-            </label>
-          </div>
-          <div class="sp-card">
-            <h3>${this._loc('editorBackground')}</h3>
-            <div class="sp-card-row" style="display:flex;flex-wrap:nowrap;align-items:center;gap:8px">
-              <input type="file" accept="image/*" data-bg-upload style="flex:1;min-width:0">
-              ${c.background_image ? `<img class="bg-preview" src="${c.background_image}"><button class="sp-del" data-bg-clear>✕</button>` : ''}
-              ${!c.background_image ? '' : ''}
-            </div>
           </div>
         </div>
 

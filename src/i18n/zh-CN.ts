@@ -46,8 +46,6 @@ const zh: Record<TranslationKey, string> = {
   editorEnergy: '能源',
   editorMediaPlayer: '媒体播放器',
   editorCamera: '摄像头',
-  editorRoomImages: '房间图片',
-  editorBackground: '背景图',
   editorHomeDevices: '首页设备',
   editorHomeRooms: '首页房间',
   editorHomeScenes: '首页场景',

@@ -46,8 +46,6 @@ const en: Record<TranslationKey, string> = {
   editorEnergy: 'Energy',
   editorMediaPlayer: 'Media Player',
   editorCamera: 'Camera',
-  editorRoomImages: 'Room Images',
-  editorBackground: 'Background',
   editorHomeDevices: 'Home Devices',
   editorHomeRooms: 'Home Rooms',
   editorHomeScenes: 'Home Scenes',

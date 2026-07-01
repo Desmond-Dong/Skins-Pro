@@ -247,8 +247,6 @@ export type TranslationKey =
   | 'editorEnergy'
   | 'editorMediaPlayer'
   | 'editorCamera'
-  | 'editorRoomImages'
-  | 'editorBackground'
   | 'editorHomeDevices'
   | 'editorHomeRooms'
   | 'editorHomeScenes'
