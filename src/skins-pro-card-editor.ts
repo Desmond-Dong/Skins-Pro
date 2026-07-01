@@ -196,7 +196,7 @@ export class SkinsProCardEditor extends HTMLElement {
 
     this.shadowRoot.innerHTML = `
       <link rel="stylesheet" href="${this.themeCssUrl()}">
-      <style>.bg-preview{max-width:100%;max-height:100px;border-radius:8px;margin-top:8px;display:block}</style>
+      <style>.bg-preview{max-width:100%;max-height:100px;border-radius:8px;margin-top:8px;display:block}.sp-card input[type=checkbox]{width:auto;min-height:auto;margin:0}.sp-card label:has(input[type=checkbox]){display:flex;align-items:center;gap:8px}</style>
       <div class="sp-wrap">
         <div class="sp-card">
           <h3>皮肤 / Skin</h3>
