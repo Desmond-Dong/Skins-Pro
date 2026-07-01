@@ -225,6 +225,10 @@ export class SkinsProCardEditor extends HTMLElement {
             <h3>媒体播放器 / Media Player</h3>
             ${this.entityPicker('Media Player', 'media_player.entity', c.media_player?.entity || '', ['media_player'])}
           </div>
+          <div class="sp-card">
+            <h3>摄像头 / Camera</h3>
+            ${this.entityPicker('Camera', 'camera.entity', c.camera?.entity || '', ['camera'])}
+          </div>
         </div>
 
         <div class="sp-row">

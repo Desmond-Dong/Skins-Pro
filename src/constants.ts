@@ -103,6 +103,9 @@ export const DEFAULT_CONFIG: DashboardConfig = {
   media_player: {
     entity: '',
   },
+  camera: {
+    entity: '',
+  },
   home_limits: {
     devices: 5,
     rooms: 4,

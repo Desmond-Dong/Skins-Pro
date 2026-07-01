@@ -133,6 +133,10 @@ export interface MediaPlayerConfig {
   entity?: string;
 }
 
+export interface CameraConfig {
+  entity?: string;
+}
+
 export interface HomeLimitsConfig {
   devices?: number;
   rooms?: number;
@@ -178,6 +182,7 @@ export interface DashboardConfig {
   nav?: NavItemConfig[];
   energy?: EnergyConfig;
   media_player?: MediaPlayerConfig;
+  camera?: CameraConfig;
   home_limits?: HomeLimitsConfig;
   home_selection?: HomeSelectionConfig;
 }

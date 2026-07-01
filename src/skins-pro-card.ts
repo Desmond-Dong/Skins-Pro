@@ -56,7 +56,7 @@ import { getMaintenanceItems } from './maintenance';
 
 import { toggleKiosk } from './kiosk';
 
-const CONTROLLABLE_DOMAINS = new Set(['light', 'switch', 'fan', 'cover', 'valve']);
+const CONTROLLABLE_DOMAINS = new Set(['light', 'switch', 'fan', 'cover', 'valve', 'media_player']);
 
 export class MinecraftDashboardCard extends LitElement {
   private _config?: DashboardConfig;
@@ -350,6 +350,21 @@ export class MinecraftDashboardCard extends LitElement {
     if (this._view === 'security') return this.renderSecurityPage(language, translate);
     if (this._view === 'energy') return this.renderEnergyPage(language, translate, energyValue, energyUnit, compareValue, energyBars);
 
+    const cameraEntityId = this._config?.camera?.entity || '';
+    const cameraState = cameraEntityId ? this._hass?.states?.[cameraEntityId] : undefined;
+    const hasCamera = Boolean(cameraState);
+
+    const cameraCard = hasCamera ? (() => {
+      const accessToken = String(cameraState?.attributes?.access_token || '');
+      const snapshotUrl = accessToken ? `/api/camera_proxy/${cameraEntityId}?token=${encodeURIComponent(accessToken)}&ts=${Date.now()}` : '';
+      return html`
+        <section class="glass-card panel-camera" @click=${() => this.handleAction(cameraEntityId, 'more-info')}>
+          <div class="section-title"><h2>${cameraState?.attributes?.friendly_name || cameraEntityId}</h2></div>
+          <div class="camera-preview"><img alt="" src=${snapshotUrl}></div>
+        </section>
+      `;
+    })() : nothing;
+
     return html`
       <div class="stage-grid">
         <div class="welcome-group">
@@ -357,7 +372,17 @@ export class MinecraftDashboardCard extends LitElement {
             <h1>${this._config?.title || localizedText(undefined, this._config?.title_zh || skinString(selectedSkin(this._config), 'title_zh'), this._config?.title_en || skinString(selectedSkin(this._config), 'title_en'), language)}</h1>
             <p class="quote">${quote}</p>
           </section>
-          ${this.renderWeather(weatherIconName)}
+          <div class="weather-with-meta">
+            ${this.renderWeather(weatherIconName)}
+            ${hasCamera ? html`
+            <div class="welcome-meta">
+              <div class="welcome-time">
+                <span class="time-main">${timeText(this._hass, language)}</span>
+                <span class="time-sub">${dateText(this._hass, language)}</span>
+              </div>
+              <div class="env-list env-list-inline">${this.renderEnvironment(language)}</div>
+            </div>` : ''}
+          </div>
         </div>
         <section class="bottom-stack">
           <section class="bottom-block bottom-devices">
@@ -370,6 +395,7 @@ export class MinecraftDashboardCard extends LitElement {
           </section>
         </section>
         <aside class="side">
+          ${hasCamera ? cameraCard : html`
           <section class="time-card">
             <div>
               <div class="time-main">${timeText(this._hass, language)}</div>
@@ -380,7 +406,7 @@ export class MinecraftDashboardCard extends LitElement {
           <section class="glass-card">
             <div class="section-title"><h2>${translate('environment')}</h2></div>
             <div class="env-list">${this.renderEnvironment(language)}</div>
-          </section>
+          </section>`}
           ${this._config?.energy?.entity ? html`
           <section class="glass-card panel-energy">
             <div class="section-title"><h2>${translate('todayEnergy')}</h2></div>
@@ -620,13 +646,16 @@ export class MinecraftDashboardCard extends LitElement {
     const stateObj = this._hass?.states?.[entityId];
     if (!stateObj) return nothing;
     const state = stateObj.state;
-    const isOff = state === 'off' || state === 'unavailable' || state === 'idle';
+    const isOff = state === 'off' || state === 'unavailable';
     if (isOff) {
       const name = (stateObj.attributes?.friendly_name as string) || entityId;
       return html`
         <section class="glass-card panel-media">
           <div class="section-title"><h2>${translate('mediaPlayer')}</h2></div>
-          <div class="media-off-state"><ha-icon icon="mdi:power-standby"></ha-icon><span>${name}</span></div>
+          <div class="media-off-state">
+            <button class="media-volbtn" @click=${() => this._hass?.callService('media_player', 'turn_on', { entity_id: entityId })} title="Turn on"><ha-icon icon="mdi:power-standby"></ha-icon></button>
+            <span>${name}</span>
+          </div>
         </section>
       `;
     }
@@ -639,28 +668,34 @@ export class MinecraftDashboardCard extends LitElement {
     const vol = attrs.volume_level as number | undefined;
     const isMuted = attrs.is_volume_muted as boolean | undefined;
     const volPct = vol !== undefined ? Math.round(vol * 100) : undefined;
+    const handleVolTrack = (e: MouseEvent) => {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      this._hass?.callService('media_player', 'volume_set', { entity_id: entityId, volume_level: pct });
+    };
     return html`
       <section class="glass-card panel-media">
         <div class="section-title"><h2>${translate('mediaPlayer')}</h2></div>
         <div class="media-content">
-          ${albumArt ? html`<div class="media-cover"><img alt="" src=${albumArt}></div>` : html`<div class="media-cover media-cover-null"><ha-icon icon="mdi:music"></ha-icon></div>`}
-          <div class="media-body">
-            <div class="media-title">${title}</div>
-            ${artist ? html`<div class="media-artist">${artist}</div>` : ''}
-            ${source ? html`<div class="media-source">${source}</div>` : ''}
+          <div class="media-row">
+            ${albumArt ? html`<div class="media-cover"><img alt="" src=${albumArt}></div>` : html`<div class="media-cover media-cover-null"><ha-icon icon="mdi:music"></ha-icon></div>`}
+            <div class="media-body">
+              <div class="media-title">${title}</div>
+              ${artist ? html`<div class="media-artist">${artist}</div>` : ''}
+              ${source ? html`<div class="media-source">${source}</div>` : ''}
+            </div>
+            <div class="media-actions">
+              <button class="media-btn" @click=${() => this._hass?.callService('media_player', 'media_previous_track', { entity_id: entityId })} title="Previous"><ha-icon icon="mdi:skip-previous"></ha-icon></button>
+              <button class="media-btn media-playbtn" @click=${() => this._hass?.callService('media_player', 'media_play_pause', { entity_id: entityId })} title=${isPlaying ? 'Pause' : 'Play'}><ha-icon icon=${isPlaying ? 'mdi:pause-circle' : 'mdi:play-circle'}></ha-icon></button>
+              <button class="media-btn" @click=${() => this._hass?.callService('media_player', 'media_next_track', { entity_id: entityId })} title="Next"><ha-icon icon="mdi:skip-next"></ha-icon></button>
+            </div>
           </div>
+          ${volPct !== undefined ? html`
+          <div class="media-row media-volrow">
+            <button class="media-volbtn" @click=${() => this._hass?.callService('media_player', 'volume_mute', { entity_id: entityId, is_volume_muted: !isMuted })}><ha-icon icon=${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}></ha-icon></button>
+            <div class="media-voltrack" @click=${handleVolTrack}><div class="media-volfill" style="width:${volPct}%"></div></div>
+          </div>` : ''}
         </div>
-        <div class="media-actions">
-          <button class="media-btn" @click=${() => this._hass?.callService('media_player', 'media_previous_track', { entity_id: entityId })} title="Previous"><ha-icon icon="mdi:skip-previous"></ha-icon></button>
-          <button class="media-btn media-playbtn" @click=${() => this._hass?.callService('media_player', 'media_play_pause', { entity_id: entityId })} title=${isPlaying ? 'Pause' : 'Play'}><ha-icon icon=${isPlaying ? 'mdi:pause-circle' : 'mdi:play-circle'}></ha-icon></button>
-          <button class="media-btn" @click=${() => this._hass?.callService('media_player', 'media_next_track', { entity_id: entityId })} title="Next"><ha-icon icon="mdi:skip-next"></ha-icon></button>
-        </div>
-        ${volPct !== undefined ? html`
-        <div class="media-volume">
-          <button class="media-volbtn" @click=${() => this._hass?.callService('media_player', 'volume_mute', { entity_id: entityId, is_volume_muted: !isMuted })}><ha-icon icon=${isMuted ? 'mdi:volume-off' : 'mdi:volume-high'}></ha-icon></button>
-          <div class="media-voltrack"><div class="media-volfill" style="width:${volPct}%"></div></div>
-          <span class="media-volpct">${volPct}%</span>
-        </div>` : ''}
       </section>
     `;
   }
@@ -725,19 +760,22 @@ export class MinecraftDashboardCard extends LitElement {
 
     return realDevices.map((device) => {
       const stateLabel = deviceStateLabel(device.state, language);
-      const active = ['on', 'playing', 'cool', 'heat', 'armed', 'locked', 'open'].includes(device.state);
+      const active = ['on', 'playing', 'paused', 'cool', 'heat', 'armed', 'locked', 'open'].includes(device.state);
       const statusClass = active ? `device-on-${device.color}` : (device.state === 'unavailable' ? 'device-unavailable' : 'device-off');
       const assetKey = assetKeyForDomain(skin, device.entityId.split('.')[0] || 'sensor');
       const domain = device.entityId.split('.')[0] || '';
-      const action = CONTROLLABLE_DOMAINS.has(domain) ? 'toggle' : 'more-info';
+      const isMedia = domain === 'media_player';
+      const action = isMedia ? 'play-pause' : (CONTROLLABLE_DOMAINS.has(domain) ? 'toggle' : 'more-info');
+      const mediaState = isMedia ? this._hass?.states?.[device.entityId] : undefined;
+      const albumArt = isMedia ? (mediaState?.attributes?.entity_picture as string | undefined) : undefined;
       return html`
         <button class="device ${statusClass}" @click=${() => this.handleAction(device.entityId, action)}>
           <div class="device-top">
-            ${this.renderImage(assetKey, device.name, 'item-img')}
+            ${albumArt ? html`<img class="item-img" src=${albumArt} alt="">` : this.renderImage(assetKey, device.name, 'item-img')}
             <div class="tag-stack"><div class="status">${stateLabel}</div></div>
           </div>
           <div class="device-copy"><p class="device-name">${device.name}</p><p class="muted">${device.subtitle}</p></div>
-          <div class="control-row"><span class="state-word">${device.detail}</span>${action === 'toggle' ? html`<span class="switch${active ? ' on' : ''}"></span>` : ''}</div>
+          <div class="control-row"><span class="state-word">${device.detail}</span>${action === 'play-pause' ? html`<ha-icon icon=${device.state === 'playing' ? 'mdi:pause' : 'mdi:play'} class="media-toggle-icon"></ha-icon>` : (action === 'toggle' ? html`<span class="switch${active ? ' on' : ''}"></span>` : '')}</div>
         </button>
       `;
     });
@@ -1141,18 +1179,33 @@ export class MinecraftDashboardCard extends LitElement {
         <div class="devices devices-page-grid">
           ${items.map((device) => {
             const stateLabel = deviceStateLabel(device.state, language);
-            const active = ['on', 'playing', 'cool', 'heat', 'armed', 'locked', 'open'].includes(device.state);
+            const active = ['on', 'playing', 'paused', 'cool', 'heat', 'armed', 'locked', 'open'].includes(device.state);
             const statusClass = active ? `device-on-${device.color}` : (device.state === 'unavailable' ? 'device-unavailable' : 'device-off');
             const assetKey = assetKeyForDomain(skin, device.entityId.split('.')[0] || 'sensor');
-            const canToggle = CONTROLLABLE_DOMAINS.has(device.detail);
+            const isMedia = device.detail === 'media_player';
+            const action = isMedia ? 'play-pause' : (CONTROLLABLE_DOMAINS.has(device.detail) ? 'toggle' : 'more-info');
+            const mediaState = isMedia ? this._hass?.states?.[device.entityId] : undefined;
+            const albumArt = isMedia ? (mediaState?.attributes?.entity_picture as string | undefined) : undefined;
+            const vol = isMedia ? (mediaState?.attributes?.volume_level as number | undefined) : undefined;
+            const volPct = vol !== undefined ? Math.round(vol * 100) : undefined;
+            const handleVolume = (e: Event) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              const pct = Math.max(0, Math.min(1, ((e as MouseEvent).clientX - rect.left) / rect.width));
+              this._hass?.callService('media_player', 'volume_set', { entity_id: device.entityId, volume_level: pct });
+            };
             return html`
-              <button class="device ${statusClass}" @click=${() => this.handleAction(device.entityId, canToggle ? 'toggle' : 'more-info')}>
+              <button class="device ${statusClass}" @click=${() => this.handleAction(device.entityId, action)}>
                 <div class="device-top">
-                  ${this.renderImage(assetKey, device.name, 'item-img')}
+                  ${albumArt ? html`<img class="item-img" src=${albumArt} alt="">` : this.renderImage(assetKey, device.name, 'item-img')}
                   <div class="tag-stack"><div class="status">${stateLabel}</div></div>
                 </div>
                 <div class="device-copy"><p class="device-name">${device.name}</p><p class="muted">${device.subtitle}</p></div>
-                <div class="control-row"><span class="state-word">${device.detail}</span>${canToggle ? html`<span class="switch${active ? ' on' : ''}"></span>` : ''}</div>
+                <div class="control-row"><span class="state-word">${device.detail}</span>${action === 'play-pause' ? html`
+                  ${volPct !== undefined ? html`<div class="media-dev-voltrack" @click=${handleVolume} @mousedown=${(e: Event) => e.stopPropagation()}><div class="media-dev-volfill" style="width:${volPct}%"></div></div>` : ''}
+                  <ha-icon icon=${device.state === 'playing' ? 'mdi:pause' : 'mdi:play'} class="media-toggle-icon"></ha-icon>
+                ` : (action === 'toggle' ? html`<span class="switch${active ? ' on' : ''}"></span>` : '')}</div>
               </button>
             `;
           })}
@@ -1352,6 +1405,8 @@ export class MinecraftDashboardCard extends LitElement {
   private handleAction(entityId: string, action: string): void {
     if (action === 'toggle') {
       void this.toggleEntity(entityId);
+    } else if (action === 'play-pause') {
+      void this._hass?.callService('media_player', 'media_play_pause', { entity_id: entityId });
     } else {
       this.moreInfo(entityId);
     }

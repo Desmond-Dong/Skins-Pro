@@ -388,6 +388,61 @@ button {
   max-width: 540px;
 }
 
+.weather-with-meta {
+  display: flex;
+  align-items: flex-start;
+  margin-top: var(--sp-space-md);
+}
+
+.welcome-meta {
+  margin-left: auto;
+}
+
+.welcome-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--sp-space-xs);
+  min-width: 0;
+  text-align: right;
+}
+
+.welcome-time {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-space-sm);
+  font-size: var(--sp-font-lg);
+  font-weight: var(--sp-font-weight-semibold);
+  color: var(--sp-text-primary);
+}
+
+.welcome-time .time-sub {
+  font-size: var(--sp-font-xs);
+  font-weight: var(--sp-font-weight-regular);
+  color: var(--sp-text-secondary);
+}
+
+.env-list-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-space-3xs) var(--sp-space-sm);
+}
+
+.env-list-inline .env-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--sp-font-2xs);
+}
+
+.env-list-inline .env-row .dot ha-icon {
+  --mdc-icon-size: 12px;
+}
+
+.env-list-inline .env-row .env-value {
+  font-weight: var(--sp-font-weight-semibold);
+}
+
 .quote {
   margin-top: var(--sp-space-xs);
   font-size: var(--sp-font-xs);
@@ -441,7 +496,9 @@ button {
 .weather-block {
   margin-top: var(--sp-space-md);
   cursor: pointer;
+  width: 100%;
   max-width: 240px;
+  flex-shrink: 0;
 }
 
 .weather-current {
@@ -930,8 +987,12 @@ button {
   left: 24px;
 }
 
+.media-toggle-icon { --mdc-icon-size:18px; color:var(--sp-text-primary); display:flex; }
+.media-dev-voltrack { width:48px; height:6px; border-radius:3px; background:var(--sp-device-bg); overflow:hidden; cursor:pointer; flex-shrink:0; }
+.media-dev-volfill { height:100%; border-radius:3px; background:var(--sp-text-tertiary); pointer-events:none; }
+
 /* ==========================================================================
-   14. Camera Card
+    14. Camera Card
    ========================================================================== */
 
 .camera-card {
@@ -1100,7 +1161,7 @@ button {
   min-height: 0;
   height: 100%;
   display: grid;
-  grid-template-rows: max-content max-content minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: max-content max-content auto auto;
   gap: var(--sp-space-lg);
   align-content: stretch;
   overflow: hidden;
@@ -1250,14 +1311,23 @@ button {
 
 .media-content {
   display: flex;
+  flex-direction: column;
+  margin-top: var(--sp-space-xs);
+}
+
+.media-row {
+  display: flex;
   align-items: center;
-  gap: var(--sp-space-sm);
-  margin-top: var(--sp-space-sm);
+  gap: var(--sp-space-xs);
+}
+
+.media-volrow {
+  margin-top: var(--sp-space-3xs);
 }
 
 .media-cover {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--sp-radius-sm);
   overflow: hidden;
   flex-shrink: 0;
@@ -1279,7 +1349,7 @@ button {
 }
 
 .media-cover-null ha-icon {
-  --mdc-icon-size: 24px;
+  --mdc-icon-size: 22px;
 }
 
 .media-body {
@@ -1296,8 +1366,8 @@ button {
 }
 
 .media-artist {
-  font-size: var(--sp-font-2xs);
-  color: var(--sp-text-secondary);
+  font-size: var(--sp-font-3xs);
+  color: var(--sp-text-tertiary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1309,15 +1379,14 @@ button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 1px;
 }
 
 .media-actions {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-space-sm);
-  margin-top: var(--sp-space-sm);
+  gap: var(--sp-space-xs);
+  flex-shrink: 0;
 }
 
 .media-btn {
@@ -1325,7 +1394,7 @@ button {
   border: none;
   color: var(--sp-text-primary);
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1340,26 +1409,25 @@ button {
 }
 
 .media-btn ha-icon {
-  --mdc-icon-size: 22px;
+  --mdc-icon-size: 24px;
 }
 
 .media-playbtn ha-icon {
-  --mdc-icon-size: 32px;
+  --mdc-icon-size: 36px;
 }
 
 .media-volume {
   display: flex;
   align-items: center;
   gap: var(--sp-space-xs);
-  margin-top: var(--sp-space-xs);
 }
 
 .media-volbtn {
   background: none;
   border: none;
-  color: var(--sp-text-secondary);
+  color: var(--sp-text-tertiary);
   cursor: pointer;
-  padding: 2px;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1369,42 +1437,51 @@ button {
 }
 
 .media-volbtn ha-icon {
-  --mdc-icon-size: 16px;
+  --mdc-icon-size: 20px;
 }
 
 .media-voltrack {
   flex: 1;
-  height: 4px;
-  border-radius: 2px;
+  height: 10px;
+  border-radius: 5px;
   background: var(--sp-device-bg);
   overflow: hidden;
+  cursor: pointer;
+  position: relative;
 }
 
 .media-volfill {
   height: 100%;
-  border-radius: 2px;
-  background: var(--sp-accent);
-  transition: width .2s;
-}
-
-.media-volpct {
-  font-size: var(--sp-font-3xs);
-  color: var(--sp-text-tertiary);
-  min-width: 28px;
-  text-align: right;
+  border-radius: 5px;
+  background: var(--sp-text-tertiary);
+  pointer-events: none;
 }
 
 .media-off-state {
   display: flex;
   align-items: center;
   gap: var(--sp-space-xs);
-  margin-top: var(--sp-space-sm);
+  margin-top: var(--sp-space-xs);
   color: var(--sp-text-tertiary);
   font-size: var(--sp-font-xs);
 }
 
 .media-off-state ha-icon {
-  --mdc-icon-size: 18px;
+  --mdc-icon-size: 16px;
+}
+
+.panel-camera {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  justify-self: stretch;
+  align-self: stretch;
+  min-height: 0;
+  cursor: pointer;
+}
+
+.panel-camera .camera-preview {
+  margin-top: var(--sp-space-xs);
 }
 
 .energy-value {
@@ -1684,7 +1761,8 @@ button {
 .mc-app[data-view="scenes"] .time-card,
 .mc-app[data-view="scenes"] .panel-environment,
 .mc-app[data-view="scenes"] .panel-energy,
-.mc-app[data-view="scenes"] .panel-media {
+.mc-app[data-view="scenes"] .panel-media,
+.mc-app[data-view="scenes"] .panel-camera {
   display: none;
 }
 
@@ -1707,7 +1785,8 @@ button {
 .mc-app[data-view="energy"] .welcome-group,
 .mc-app[data-view="energy"] .bottom-stack,
 .mc-app[data-view="energy"] .panel-scenes,
-.mc-app[data-view="energy"] .panel-media {
+.mc-app[data-view="energy"] .panel-media,
+.mc-app[data-view="energy"] .panel-camera {
   display: none;
 }
 

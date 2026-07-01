@@ -33,6 +33,10 @@ export function mergeConfig(config: DashboardConfig): DashboardConfig {
       ...DEFAULT_CONFIG.media_player,
       ...config.media_player,
     },
+    camera: {
+      ...DEFAULT_CONFIG.camera,
+      ...config.camera,
+    },
     home_limits: {
       ...DEFAULT_CONFIG.home_limits,
       ...config.home_limits,
