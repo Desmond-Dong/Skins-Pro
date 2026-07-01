@@ -683,7 +683,7 @@ button {
 
 .filter-select {
   min-height: 36px;
-  padding: 0 var(--sp-space-sm);
+  padding: 0 var(--sp-space-lg) 0 var(--sp-space-sm);
   border: var(--sp-border-w) solid var(--sp-border-glass);
   border-radius: var(--sp-radius-infinite);
   background: var(--glass-thick);
@@ -699,6 +699,10 @@ button {
   cursor: pointer;
   min-width: 120px;
   box-sizing: border-box;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
 }
 
 .filter-select option {
