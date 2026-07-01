@@ -100,6 +100,9 @@ export const DEFAULT_CONFIG: DashboardConfig = {
     compare_text_zh: '较昨日',
     compare_text_en: 'vs yesterday',
   },
+  media_player: {
+    entity: '',
+  },
   home_limits: {
     devices: 5,
     rooms: 4,

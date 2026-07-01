@@ -1231,6 +1231,103 @@ button {
   flex-direction: column;
 }
 
+/* ---- Media Player (sidebar) ---- */
+
+.panel-media {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  justify-self: stretch;
+  align-self: stretch;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.media-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-space-sm);
+  margin-top: var(--sp-space-sm);
+}
+
+.media-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--sp-radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.media-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.media-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.media-title {
+  font-size: var(--sp-font-xs);
+  font-weight: var(--sp-font-weight-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-artist {
+  font-size: var(--sp-font-2xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-space-md);
+  margin-top: var(--sp-space-sm);
+}
+
+.media-btn {
+  background: none;
+  border: none;
+  color: var(--sp-text-primary);
+  cursor: pointer;
+  padding: var(--sp-space-2xs);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+  min-height: auto;
+  width: auto;
+}
+
+.media-btn:hover {
+  background: var(--sp-device-bg);
+}
+
+.media-btn ha-icon {
+  --mdc-icon-size: 22px;
+}
+
+.media-play ha-icon {
+  --mdc-icon-size: 28px;
+}
+
+.media-off {
+  font-size: var(--sp-font-xs);
+  margin-top: var(--sp-space-3xs);
+}
+
 .energy-value {
   font-size: var(--sp-font-xxl);
   line-height: 1;
@@ -1507,7 +1604,8 @@ button {
 .mc-app[data-view="scenes"] .bottom-stack,
 .mc-app[data-view="scenes"] .time-card,
 .mc-app[data-view="scenes"] .panel-environment,
-.mc-app[data-view="scenes"] .panel-energy {
+.mc-app[data-view="scenes"] .panel-energy,
+.mc-app[data-view="scenes"] .panel-media {
   display: none;
 }
 
@@ -1529,7 +1627,8 @@ button {
 
 .mc-app[data-view="energy"] .welcome-group,
 .mc-app[data-view="energy"] .bottom-stack,
-.mc-app[data-view="energy"] .panel-scenes {
+.mc-app[data-view="energy"] .panel-scenes,
+.mc-app[data-view="energy"] .panel-media {
   display: none;
 }
 

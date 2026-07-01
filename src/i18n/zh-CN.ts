@@ -39,6 +39,7 @@ const zh: Record<TranslationKey, string> = {
   confirmAction: '确认执行此操作？',
   uploadBackground: '上传背景图',
   clearBackground: '清除背景图',
+  mediaPlayer: '媒体播放器',
 };
 
 export default zh;

@@ -39,6 +39,7 @@ const en: Record<TranslationKey, string> = {
   confirmAction: 'Confirm this operation?',
   uploadBackground: 'Upload background',
   clearBackground: 'Clear background',
+  mediaPlayer: 'Media Player',
 };
 
 export default en;

@@ -386,6 +386,7 @@ export class MinecraftDashboardCard extends LitElement {
             <div class="bars">${energyBars}</div>
             <div class="energy-footer"><span class="muted">${localizedText(this._config?.energy?.compare_text, this._config?.energy?.compare_text_zh, this._config?.energy?.compare_text_en, language, translate('compareYesterday'))}</span><span class="down">${compareValue || '--'}</span></div>
           </section>
+          ${this.renderMediaPlayer(language, translate)}
           ${this.renderMaintenanceCard(language, translate)}
           <section class="glass-card panel-scenes" data-section="scenes">
             <div class="section-title"><h2>${translate('scenes')}</h2><p class="muted">${translate('modes')}</p></div>
@@ -606,6 +607,38 @@ export class MinecraftDashboardCard extends LitElement {
   }
 
   // ─── Maintenance ────────────────────────────────────────
+
+  private renderMediaPlayer(language: Language, translate: (key: TranslationKey) => string): TemplateResult | typeof nothing {
+    const entityId = this._config?.media_player?.entity;
+    if (!entityId) return nothing;
+    const stateObj = this._hass?.states?.[entityId];
+    if (!stateObj) return nothing;
+    const state = stateObj.state;
+    const attrs = stateObj.attributes || {};
+    const title = (attrs.media_title as string) || (attrs.friendly_name as string) || entityId;
+    const artist = attrs.media_artist as string | undefined;
+    const albumArt = attrs.entity_picture as string | undefined;
+    const isPlaying = state === 'playing';
+    const isOff = state === 'off' || state === 'unavailable';
+    return html`
+      <section class="glass-card panel-media">
+        <div class="section-title"><h2>${translate('mediaPlayer')}</h2></div>
+        ${isOff ? html`<div class="media-off muted">${deviceStateLabel(state, language)}</div>` : html`
+        <div class="media-info">
+          ${albumArt ? html`<div class="media-thumb"><img alt="" src=${albumArt}></div>` : ''}
+          <div class="media-meta">
+            <div class="media-title">${title}</div>
+            ${artist ? html`<div class="media-artist muted">${artist}</div>` : ''}
+          </div>
+        </div>
+        <div class="media-controls">
+          <button class="media-btn" @click=${() => this._hass?.callService('media_player', 'media_previous_track', { entity_id: entityId })}><ha-icon icon="mdi:skip-previous"></ha-icon></button>
+          <button class="media-btn media-play" @click=${() => this._hass?.callService('media_player', 'media_play_pause', { entity_id: entityId })}><ha-icon icon=${isPlaying ? 'mdi:pause' : 'mdi:play'}></ha-icon></button>
+          <button class="media-btn" @click=${() => this._hass?.callService('media_player', 'media_next_track', { entity_id: entityId })}><ha-icon icon="mdi:skip-next"></ha-icon></button>
+        </div>`}
+      </section>
+    `;
+  }
 
   private renderMaintenanceCard(language: Language, translate: (key: TranslationKey) => string): TemplateResult | typeof nothing {
     const items = this.getMaintenanceItemsInternal(language);

@@ -129,6 +129,10 @@ export interface EnergyConfig {
   compare_text_en?: string;
 }
 
+export interface MediaPlayerConfig {
+  entity?: string;
+}
+
 export interface HomeLimitsConfig {
   devices?: number;
   rooms?: number;
@@ -173,6 +177,7 @@ export interface DashboardConfig {
   scenes?: SceneConfig[];
   nav?: NavItemConfig[];
   energy?: EnergyConfig;
+  media_player?: MediaPlayerConfig;
   home_limits?: HomeLimitsConfig;
   home_selection?: HomeSelectionConfig;
 }
@@ -229,7 +234,8 @@ export type TranslationKey =
   | 'turnOffAll'
   | 'confirmAction'
   | 'uploadBackground'
-  | 'clearBackground';
+  | 'clearBackground'
+  | 'mediaPlayer';
 
 export interface EnergySourceData {
   key: TranslationKey;

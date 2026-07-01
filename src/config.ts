@@ -29,6 +29,10 @@ export function mergeConfig(config: DashboardConfig): DashboardConfig {
       ...DEFAULT_CONFIG.energy,
       ...config.energy,
     },
+    media_player: {
+      ...DEFAULT_CONFIG.media_player,
+      ...config.media_player,
+    },
     home_limits: {
       ...DEFAULT_CONFIG.home_limits,
       ...config.home_limits,
@@ -124,6 +128,9 @@ export function buildAutoConfig(hass: HomeAssistant): DashboardConfig {
     energy: {
       ...DEFAULT_CONFIG.energy,
       entity: energyEntity || DEFAULT_CONFIG.energy?.entity,
+    },
+    media_player: {
+      entity: mediaEntity || DEFAULT_CONFIG.media_player?.entity,
     },
     devices: [
       { ...defaultDevice0, entity: lightEntities[0] || defaultDevice0.entity, temperature_entity: livingTemp || defaultDevice0.temperature_entity },
