@@ -45,6 +45,9 @@ export function deviceStateLabel(state: string, language: Language): string {
   if (state === 'off' || state === 'idle' || state === 'standby') {
     return STRINGS[language].off;
   }
+  if (/^armed_|^disarmed|^triggered|^pending|^arming/.test(state)) {
+    return state.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  }
   return formatRawState(state, language);
 }
 

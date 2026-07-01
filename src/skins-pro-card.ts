@@ -355,6 +355,16 @@ export class MinecraftDashboardCard extends LitElement {
     const cameraState = cameraEntityId ? this._hass?.states?.[cameraEntityId] : undefined;
     const hasCamera = Boolean(cameraState);
 
+    const alarmEntityId = Object.keys(this._hass?.states || {}).find(e => e.startsWith('alarm_control_panel.')) || '';
+    const alarmStateObj = alarmEntityId ? this._hass?.states?.[alarmEntityId] : undefined;
+    const alarmState = alarmStateObj?.state || '';
+    const alarmIconMap: Record<string, string> = {
+      disarmed: 'mdi:shield-off', armed_home: 'mdi:shield-home', armed_away: 'mdi:shield-lock',
+      armed_night: 'mdi:shield-moon', armed_vacation: 'mdi:shield-airplane', triggered: 'mdi:bell-ring',
+      pending: 'mdi:shield-sync', arming: 'mdi:shield-sync',
+    };
+    const alarmIcon = alarmIconMap[alarmState] || 'mdi:shield-lock';
+
     const cameraCard = hasCamera ? (() => {
       const accessToken = String(cameraState?.attributes?.access_token || '');
       const snapshotUrl = accessToken ? `/api/camera_proxy/${cameraEntityId}?token=${encodeURIComponent(accessToken)}&ts=${Date.now()}` : '';
@@ -377,9 +387,9 @@ export class MinecraftDashboardCard extends LitElement {
             ${this.renderWeather(weatherIconName)}
             ${hasCamera ? html`
             <div class="welcome-meta">
-              <div class="welcome-time">
+              <div style="display:flex;justify-content:space-between;align-items:center">
                 <span class="time-main">${timeText(this._hass, language)}</span>
-                <span class="time-sub">${dateText(this._hass, language)}</span>
+                <span class="time-sub" style="font-size:var(--sp-font-sm)">${dateText(this._hass, language)}</span>
               </div>
               <div class="env-list env-list-inline">${this.renderEnvironment(language)}</div>
             </div>` : ''}
@@ -398,11 +408,11 @@ export class MinecraftDashboardCard extends LitElement {
         <aside class="side">
           ${hasCamera ? cameraCard : html`
           <section class="time-card">
-            <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
               <div class="time-main">${timeText(this._hass, language)}</div>
-              <div class="time-sub">${dateText(this._hass, language)}</div>
+              <div class="time-sub" style="font-size:var(--sp-font-sm)">${dateText(this._hass, language)}</div>
             </div>
-            <div class="time-icon"><ha-icon icon="mdi:clock-outline"></ha-icon></div>
+            <div class="time-icon" @click=${alarmEntityId ? () => this.handleAction(alarmEntityId, 'more-info') : undefined} style=${alarmEntityId ? 'cursor:pointer' : ''}><ha-icon icon=${alarmIcon}></ha-icon></div>
           </section>
           <section class="glass-card">
             <div class="section-title"><h2>${translate('environment')}</h2></div>
