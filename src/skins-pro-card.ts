@@ -306,7 +306,7 @@ export class MinecraftDashboardCard extends LitElement {
         <div class="mc-app" data-view=${this._view}>
           <aside class="sidebar">
             <div class="profile" @click=${() => this.toggleKioskFullscreen()}>
-              ${this.renderImage('avatar', 'Avatar', 'profile-img')}
+              ${this.renderUserAvatar('profile-img')}
               <div class="meta">
                 <h2>${this._config.profile_name || this._hass?.user?.name || ''}</h2>
                 <p class="muted">${this._config.profile_subtitle || localizedText(undefined, this._config.profile_subtitle_zh || skinString(selectedSkin(this._config), 'profile_subtitle_zh'), this._config.profile_subtitle_en || skinString(selectedSkin(this._config), 'profile_subtitle_en'), language)}</p>
@@ -473,6 +473,22 @@ export class MinecraftDashboardCard extends LitElement {
   }
 
   // ─── Asset helpers (delegate to utils) ──────────────────
+
+  /** Find the person entity linked to the current HA user and return its entity_picture. */
+  private userAvatarUrl(): string {
+    const userId = this._hass?.user?.id;
+    if (!userId || !this._hass) return '';
+    const person = Object.values(this._hass.states).find(
+      (s) => s && s.entity_id.startsWith('person.') && (s.attributes as Record<string, unknown>).user_id === userId,
+    );
+    return (person?.attributes?.entity_picture as string | undefined) || '';
+  }
+
+  private renderUserAvatar(className: string): TemplateResult | typeof nothing {
+    const url = this.userAvatarUrl() || assetUrl(this._config, 'avatar');
+    if (!url) return nothing;
+    return html`<img class=${className} alt="Avatar" src=${url}>`;
+  }
 
   private renderImage(key: string, alt: string, className?: string): TemplateResult | typeof nothing {
     const url = assetUrl(this._config, key);
